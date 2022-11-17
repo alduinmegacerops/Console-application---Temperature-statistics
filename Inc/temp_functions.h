@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAX_COUNT_YEAR_T 525600		//максимальное количество измерений датичка температуры за год
 #define MAX_COUNT_MONTH_T 44640		//максимальное количество измерений датичка температуры за месяц

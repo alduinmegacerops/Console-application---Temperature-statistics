@@ -2,7 +2,9 @@
 
 int main(int argc, char **argv)
 {
-	struct sensorTemperature data_temperature[MAX_COUNT_MONTH_T];
+	struct sensorTemperature *dataTemperature;
+	
+	dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature));
 	
 	printf("Step 1");
 	

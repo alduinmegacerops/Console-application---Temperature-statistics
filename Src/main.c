@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-	struct sensorTemperature data_temperature[1];
+	struct sensorTemperature data_temperature[MAX_COUNT_MONTH_T];
 	
 	printf("Step 1");
 	

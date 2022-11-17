@@ -2,9 +2,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#define MAX_COUNT_T 525600		//максимально количество измерений датичка температуры за год
+#define MAX_COUNT_YEAR_T 525600		//максимальное количество измерений датичка температуры за год
+#define MAX_COUNT_MONTH_T 44640		//максимальное количество измерений датичка температуры за месяц
 
-struct sensorTemperature		//структура для занчений температуры с датчика
+struct sensorTemperature		//структура для занчений с датчика
 {
 	uint16_t year;				//год
 	uint8_t month_dig;			//месяц числом

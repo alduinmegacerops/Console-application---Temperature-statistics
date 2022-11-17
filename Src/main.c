@@ -2,7 +2,9 @@
 
 int main(int argc, char **argv)
 {
-	printf("Starting to start");
+	struct sensorTemperature data_temperature[1];
+	
+	printf("Step 1");
 	
 	return 0;
 }

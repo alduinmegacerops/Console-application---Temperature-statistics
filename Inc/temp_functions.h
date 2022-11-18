@@ -16,7 +16,7 @@ struct sensorTemperature		//структура для занчений с дат
 	int temperature;			//температура
 };
 
-void addDataTemperature(struct sensorTemperature*);			//считывание и парсинг данных	
+void addDataTemperature(struct sensorTemperature*, int*);			//считывание и парсинг данных	
 
 float middleTemperatureMonth(struct sensorTemperature*);	//среднемесячная температура
 
@@ -30,4 +30,4 @@ int minTemperatureYear(struct sensorTemperature*);			//минамальная т
 
 int maxTemperatureYear(struct sensorTemperature*);			//максимальная температура за год
 
-void printDataTemperature(struct sensorTemperature*);			//печать
+void printDataTemperature(struct sensorTemperature*, int);			//печать

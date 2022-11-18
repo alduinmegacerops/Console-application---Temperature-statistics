@@ -4,6 +4,8 @@ int main(int argc, char **argv)
 {
 	struct sensorTemperature *dataTemperature = NULL;
 	
+	int countSensorMeasurements = 0;
+	
 	//dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature));
 	//Выделение памяти пот массив структур и проверка выделилась ли память
 	if (!(dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature))))
@@ -12,9 +14,9 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	
-	addDataTemperature(dataTemperature);
+	addDataTemperature(dataTemperature, &countSensorMeasurements);
 	
-	printDataTemperature(dataTemperature);
+	printDataTemperature(dataTemperature, countSensorMeasurements);
 	
 	printf("\nNot error");
 	

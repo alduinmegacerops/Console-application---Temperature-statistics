@@ -1,19 +1,55 @@
 #include "../Inc/temp_functions.h"
 
-void addDataTemperature(struct sensorTemperature* dataTemperature)			//считывание и парсингср данных	
+void addDataTemperature(struct sensorTemperature* dataTemperature, int *countSensorMeasurements)			//считывание и парсингср данных	
 {
-	int count = 0;
+	char buffer[21];
+	int errorCount = 0;
 	
 	FILE *in;
 	
 	in = fopen("Data/temperature_small.csv", "r");
 	
-	fscanf(in, "%d;%d;%d;%d;%d;%d", &dataTemperature->year, 
-									&dataTemperature->month,
-									&dataTemperature->day,
-									&dataTemperature->hour,
-									&dataTemperature->minute,
-									&dataTemperature->temperature);
+	for(*countSensorMeasurements; fscanf(in, "%21[^\n]s", buffer) != -1; (*countSensorMeasurements)++)
+	{
+		char tmp;
+		uint8_t flag = 1;
+		
+		do
+		{
+			tmp = fgetc(in);
+		}
+		while(tmp != EOF && tmp != '\n');
+		
+		for(int i = 0; i < 21; i++)
+		{
+			if(buffer[i] == ';' || buffer[i] == '-' || buffer[i] == ' ' || buffer[i] == 0x0 || (buffer[i] >= '0' && buffer[i] <= '9'))
+				flag = 0;
+			else
+			{
+				flag = 1;
+				memset(buffer,0,sizeof(buffer));
+				break;
+			}
+		}
+		
+		if(flag == 0)
+		{
+			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&(dataTemperature + *countSensorMeasurements) -> year, 
+												&(dataTemperature + *countSensorMeasurements) -> month,
+												&(dataTemperature + *countSensorMeasurements) -> day,
+												&(dataTemperature + *countSensorMeasurements) -> hour,
+												&(dataTemperature + *countSensorMeasurements) -> minute,
+												&(dataTemperature + *countSensorMeasurements) -> temperature);
+			memset(buffer,0,sizeof(buffer));
+		}
+		else
+		{
+			printf("Data file error in line %d\n", *countSensorMeasurements + 1 + errorCount);
+			errorCount++;
+			(*countSensorMeasurements)--;
+		}
+	}
+		
 	
 	fclose(in);
 }
@@ -47,12 +83,16 @@ int maxTemperatureYear(struct sensorTemperature* dataTemperature)			//макси
 {
 	
 }
-void printDataTemperature(struct sensorTemperature* dataTemperature)		//считывание и парсингср данных	
+void printDataTemperature(struct sensorTemperature* dataTemperature, int countSensorMeasurements)		//считывание и парсингср данных	
 {
-	printf("%04d %02d %02d %02d %02d %3d",	dataTemperature->year,
-											dataTemperature->month,
-											dataTemperature->day,
-											dataTemperature->hour,
-											dataTemperature->minute,
-											dataTemperature->temperature);
+	printf("%d\n", countSensorMeasurements);
+	for(int i = 0; i < countSensorMeasurements; i++)
+	{	
+		printf("%04d %02d %02d %02d %02d %3d\n",	(dataTemperature + i) -> year,
+													(dataTemperature + i) -> month,
+													(dataTemperature + i) -> day,
+													(dataTemperature + i) -> hour,
+													(dataTemperature + i) -> minute,
+													(dataTemperature + i) -> temperature);
+	}
 }

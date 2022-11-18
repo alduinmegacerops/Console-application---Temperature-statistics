@@ -1,6 +1,7 @@
 #include "../Inc/temp_functions.h"
 
-void addDataTemperature(struct sensorTemperature* dataTemperature, int *countSensorMeasurements)			//считывание и парсингср данных	
+//функция для считывания и парсинга данных	
+void addDataTemperature(struct sensorTemperature* dataTemperature, int *countSensorMeasurements)
 {
 	char buffer[21];
 	int errorCount = 0;
@@ -49,41 +50,48 @@ void addDataTemperature(struct sensorTemperature* dataTemperature, int *countSen
 			(*countSensorMeasurements)--;
 		}
 	}
-		
 	
 	fclose(in);
 }
 
-float middleTemperatureMonth(struct sensorTemperature* dataTemperature)		//среднемесячная температура
+//функция для расчета среднемесячной температуры
+float middleTemperatureMonth(struct sensorTemperature* dataTemperature)
 {
 	
 }
 
-int minTemperatureMonth(struct sensorTemperature* dataTemperature)			//минимальная температура за месяц
+//функция для нахождения минимальной температура за месяц
+int minTemperatureMonth(struct sensorTemperature* dataTemperature)
 {
 	
 }
 
-int maxTemperatureMonth(struct sensorTemperature* dataTemperature)			//максимальная температура за месяц
+//функция для нахождения максимальной температура за месяц
+int maxTemperatureMonth(struct sensorTemperature* dataTemperature)
 {
 	
 }
 
-float middleTemperatureYear(struct sensorTemperature* dataTemperature)		//среднегодовая температура
+//функция для расчета среднегодовой температуры
+float middleTemperatureYear(struct sensorTemperature* dataTemperature)
+{
+		
+}
+
+//функция для нахождения минимальной температура за год
+int minTemperatureYear(struct sensorTemperature* dataTemperature)
 {
 	
 }
 
-int minTemperatureYear(struct sensorTemperature* dataTemperature)			//минамальная температура за год
+//функция для нахождения максимальной температура за год
+int maxTemperatureYear(struct sensorTemperature* dataTemperature)
 {
 	
 }
 
-int maxTemperatureYear(struct sensorTemperature* dataTemperature)			//максимальная температура за год
-{
-	
-}
-void printDataTemperature(struct sensorTemperature* dataTemperature, int countSensorMeasurements)		//считывание и парсингср данных	
+//функция для нахождения минимальной температура за месяц
+void printDataTemperature(struct sensorTemperature* dataTemperature, int countSensorMeasurements)	
 {
 	printf("%d\n", countSensorMeasurements);
 	for(int i = 0; i < countSensorMeasurements; i++)

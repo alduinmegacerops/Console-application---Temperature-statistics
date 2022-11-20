@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 	
 	uint32_t countSensorMeasurements = 0;
 	
-	char nameDirr[100] = "Data/temperature_medium.csv";
+	char nameDirr[100] = "Data/temperature_big.csv";
 	char test[100];
 	
 	//dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature));
@@ -18,6 +18,9 @@ int main(int argc, char **argv)
 	}
 	
 	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
+	
+	if(strcmp(nameDirr, "Data/temperature_big.csv"))
+		sortByDate(dataTemperature, countSensorMeasurements);
 	
 	printDataTemperature(dataTemperature, countSensorMeasurements);
 	

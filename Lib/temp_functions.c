@@ -14,6 +14,27 @@ void errorData(uint32_t lineFileDataError, uint32_t errCount)
 	
 	fclose(err);
 }
+//функци перевода даты и временив в uint64_t
+uint64_t dateToInt(struct sensorTemperature* dataTemperature)
+{
+	return dataTemperature -> minute + dataTemperature -> hour * 100 + dataTemperature -> day * 10000 + dataTemperature -> month * 1000000 + dataTemperature -> year * 100000000;
+}
+//функция меняет местами i-й элемент с j-ым элементом
+void swap(struct sensorTemperature* dataTemperature, uint32_t i, uint32_t j)
+{
+	struct sensorTemperature temp;
+	temp = dataTemperature[i];
+	dataTemperature[i] = dataTemperature[j];
+	dataTemperature[j] = temp;
+}
+//функция сортировки
+void sortByDate(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
+{
+    for(int i = 0; i < countMeasurements; ++i)
+		for (int j = i; j < countMeasurements; ++j)
+			if(dateToInt(dataTemperature + i) >= dateToInt(dataTemperature + j))
+				swap(dataTemperature, i, j);
+}
 //функция для считывания и парсинга данных	
 void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *countMeasurements, char *nameFile)
 {
@@ -106,7 +127,13 @@ void printDataTemperature(struct sensorTemperature* dataTemperature, uint32_t co
 													(dataTemperature + i) -> hour,
 													(dataTemperature + i) -> minute,
 													(dataTemperature + i) -> temperature);
+		//printf("%lld\n", dateToInt(dataTemperature + i));
 	}
+	//printf("\n");
+	//for(int i = 0; i < countMeasurements; i++)
+	//{	
+	//	printf("%lld\n", dateToInt(dataTemperature + i));
+	//}
 }
 //функция для печати статистики
 void printStat(struct sensorTemperature* dataTemperature)	

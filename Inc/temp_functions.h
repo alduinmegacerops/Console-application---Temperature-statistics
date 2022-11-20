@@ -18,6 +18,8 @@ struct sensorTemperature		//структура для занчений с дат
 
 void addDataTemperature(struct sensorTemperature*, uint32_t*, char*);			//считывание и парсинг данных	
 
+void sortByDate(struct sensorTemperature*, uint32_t);							//сортровка по дате
+
 float middleTemperatureMonth(struct sensorTemperature*, uint32_t);				//среднемесячная температура
 
 int minTemperatureMonth(struct sensorTemperature*, uint32_t);					//минимальная температура за месяц

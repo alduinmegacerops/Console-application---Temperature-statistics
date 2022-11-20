@@ -9,25 +9,27 @@
 struct sensorTemperature		//структура для занчений с датчика
 {
 	uint16_t year;				//год
-	uint8_t month;			//месяц
+	uint8_t month;				//месяц
 	uint8_t day;				//деннь
 	uint8_t hour;				//часы
 	uint8_t minute;				//минуты
 	int temperature;			//температура
 };
 
-void addDataTemperature(struct sensorTemperature*, int*);			//считывание и парсинг данных	
+void addDataTemperature(struct sensorTemperature*, uint32_t*, char*);			//считывание и парсинг данных	
 
-float middleTemperatureMonth(struct sensorTemperature*);	//среднемесячная температура
+float middleTemperatureMonth(struct sensorTemperature*, uint32_t);				//среднемесячная температура
 
-int minTemperatureMonth(struct sensorTemperature*);			//минимальная температура за месяц
+int minTemperatureMonth(struct sensorTemperature*, uint32_t);					//минимальная температура за месяц
 
-int maxTemperatureMonth(struct sensorTemperature*);			//максимальная температура за месяц
+int maxTemperatureMonth(struct sensorTemperature*, uint32_t);					//максимальная температура за месяц
 
-float middleTemperatureYear(struct sensorTemperature*);		//среднегодовая температура
+float middleTemperatureYear(struct sensorTemperature*, uint32_t);				//среднегодовая температура
 
-int minTemperatureYear(struct sensorTemperature*);			//минамальная температура за год
+int minTemperatureYear(struct sensorTemperature*, uint32_t);					//минамальная температура за год
 
-int maxTemperatureYear(struct sensorTemperature*);			//максимальная температура за год
+int maxTemperatureYear(struct sensorTemperature*, uint32_t);					//максимальная температура за год
 
-void printDataTemperature(struct sensorTemperature*, int);			//печать
+void printDataTemperature(struct sensorTemperature*, uint32_t);					//печать счиатанных данных
+
+void printStat(struct sensorTemperature*);										//печать статистики

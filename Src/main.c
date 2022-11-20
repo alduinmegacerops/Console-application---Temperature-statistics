@@ -4,21 +4,24 @@ int main(int argc, char **argv)
 {
 	struct sensorTemperature *dataTemperature = NULL;
 	
-	int countSensorMeasurements = 0;
+	uint32_t countSensorMeasurements = 0;
+	
+	char nameDirr[100] = "Data/temperature_medium.csv";
+	char test[100];
 	
 	//dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature));
-	//Выделение памяти пот массив структур и проверка выделилась ли память
+	//Выделение памяти под массив структур и проверка выделилась ли память
 	if (!(dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature))))
 	{
 		printf("Error: can't allocate memory");
 		exit(1);
 	}
 	
-	addDataTemperature(dataTemperature, &countSensorMeasurements);
+	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
 	
 	printDataTemperature(dataTemperature, countSensorMeasurements);
 	
-	printf("\nNot error");
+	printf("Not ERROR");
 	
 	return 0;
 }

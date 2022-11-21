@@ -5,11 +5,12 @@ int main(int argc, char **argv)
 	struct sensorTemperature *dataTemperature = NULL;
 	
 	uint32_t countSensorMeasurements = 0;
+	uint8_t numberMonth = 4;
 	
-	char nameDirr[100] = "Data/temperature_big.csv";
-	char test[100];
+	float statMonth[12][4] = {0};
 	
-	//dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature));
+	char nameDirr[100] = "Data/temperature_medium.csv";
+	
 	//Выделение памяти под массив структур и проверка выделилась ли память
 	if (!(dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature))))
 	{
@@ -19,8 +20,19 @@ int main(int argc, char **argv)
 	
 	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
 	
-	if(strcmp(nameDirr, "Data/temperature_big.csv"))
-		sortByDate(dataTemperature, countSensorMeasurements);
+	sortByDate(dataTemperature, countSensorMeasurements, nameDirr);
+	
+	middleTemperatureMonth(dataTemperature, countSensorMeasurements, statMonth);
+	minTemperatureMonth(dataTemperature, statMonth);
+	maxTemperatureMonth(dataTemperature, statMonth);
+	
+	for(int i = 0; i < 12; i++)
+	{
+		if(statMonth[i][0] == 0)
+			printf("%05.2f %3.0f %3.0f\n", statMonth[i][1], statMonth[i][2], statMonth[i][3]);
+		else
+			printf("Not temperature in %02d month\n", i + 1);
+	}
 	
 	printDataTemperature(dataTemperature, countSensorMeasurements);
 	

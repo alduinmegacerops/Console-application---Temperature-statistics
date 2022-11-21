@@ -16,22 +16,22 @@ struct sensorTemperature		//структура для занчений с дат
 	int temperature;			//температура
 };
 
-void addDataTemperature(struct sensorTemperature*, uint32_t*, char*);			//считывание и парсинг данных	
+void addDataTemperature(struct sensorTemperature*, uint32_t*, char*);					//считывание и парсинг данных
 
-void sortByDate(struct sensorTemperature*, uint32_t);							//сортровка по дате
+void sortByDate(struct sensorTemperature*, uint32_t, char*);							//сортровка по дате
 
-float middleTemperatureMonth(struct sensorTemperature*, uint32_t);				//среднемесячная температура
+void middleTemperatureMonth(struct sensorTemperature*, uint32_t, float (*)[]);			//среднемесячная температура
 
-int minTemperatureMonth(struct sensorTemperature*, uint32_t);					//минимальная температура за месяц
+void minTemperatureMonth(struct sensorTemperature*, float (*)[]);						//минимальная температура за месяц
 
-int maxTemperatureMonth(struct sensorTemperature*, uint32_t);					//максимальная температура за месяц
+void maxTemperatureMonth(struct sensorTemperature*, float (*)[]);						//максимальная температура за месяц
 
-float middleTemperatureYear(struct sensorTemperature*, uint32_t);				//среднегодовая температура
+float middleTemperatureYear(struct sensorTemperature*, uint32_t);						//среднегодовая температура
 
-int minTemperatureYear(struct sensorTemperature*, uint32_t);					//минамальная температура за год
+int minTemperatureYear(struct sensorTemperature*, uint32_t);							//минамальная температура за год
 
-int maxTemperatureYear(struct sensorTemperature*, uint32_t);					//максимальная температура за год
+int maxTemperatureYear(struct sensorTemperature*, uint32_t);							//максимальная температура за год
 
-void printDataTemperature(struct sensorTemperature*, uint32_t);					//печать счиатанных данных
+void printDataTemperature(struct sensorTemperature*, uint32_t);							//печать счиатанных данных
 
-void printStat(struct sensorTemperature*);										//печать статистики
+void printStat(struct sensorTemperature*);												//печать статистики

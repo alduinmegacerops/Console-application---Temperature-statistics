@@ -8,6 +8,7 @@ int main(int argc, char **argv)
 	uint8_t numberMonth = 4;
 	
 	float statMonth[12][4] = {0};
+	float statYear[3] = {0};
 	
 	char nameDirr[100] = "Data/temperature_medium.csv";
 	
@@ -26,6 +27,10 @@ int main(int argc, char **argv)
 	minTemperatureMonth(dataTemperature, statMonth);
 	maxTemperatureMonth(dataTemperature, statMonth);
 	
+	statYear[0] = middleTemperatureYear(dataTemperature, countSensorMeasurements);
+	statYear[1] = minTemperatureYear(dataTemperature, countSensorMeasurements);
+	statYear[2] = maxTemperatureYear(dataTemperature, countSensorMeasurements);
+	
 	for(int i = 0; i < 12; i++)
 	{
 		if(statMonth[i][0] == 0)
@@ -34,6 +39,8 @@ int main(int argc, char **argv)
 			printf("Not temperature in %02d month\n", i + 1);
 	}
 	
+	printf("%05.2f %3.f %3.0f\n", statYear[0], statYear[1], statYear[2]);
+		
 	printDataTemperature(dataTemperature, countSensorMeasurements);
 	
 	printf("Not ERROR");

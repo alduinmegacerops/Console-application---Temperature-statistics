@@ -211,17 +211,34 @@ void maxTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat
 //функция для расчета среднегодовой температуры
 float middleTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
 {
+	float sumTemperatureYear = 0;
 		
+	for(int i = 0; i < countMeasurements; i++)
+		sumTemperatureYear += (dataTemperature + i) -> temperature;
+		
+	return sumTemperatureYear / countMeasurements;
 }
 //функция для нахождения минимальной температура за год
 int minTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
 {
+	int minTempYear = dataTemperature -> temperature;
 	
+	for(int i = 1; i < countMeasurements; i++)
+		if(minTempYear > (dataTemperature + i) -> temperature)
+			minTempYear = (dataTemperature + i) -> temperature;
+			
+	return minTempYear;
 }
 //функция для нахождения максимальной температура за год
 int maxTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
 {
+	int maxTempYear = dataTemperature -> temperature;
 	
+	for(int i = 1; i < countMeasurements; i++)
+		if(maxTempYear < (dataTemperature + i) -> temperature)
+			maxTempYear = (dataTemperature + i) -> temperature;
+			
+	return maxTempYear;
 }
 //функция для печати счиатанных данных
 void printDataTemperature(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)	

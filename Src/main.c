@@ -5,13 +5,14 @@ int main(int argc, char **argv)
 	struct sensorTemperature *dataTemperature = NULL;
 	
 	uint32_t countSensorMeasurements = 0;
-	uint8_t numberMonth = 0;
 	int key = 0;
+	uint8_t numberMonth = 0;
 	
 	float statMonth[12][4] = {0};
 	float statYear[3] = {0};
 	
-	char nameDirr[100] = "Data/temperature_medium.csv";
+	char nameDirr[100];
+	char numberM[10];
 	
 	//Выделение памяти под массив структур и проверка выделилась ли память
 	if (!(dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature))))
@@ -20,27 +21,38 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	
-	/*while( (key = getopt(argc, argv, "hf:m::")) != -1)
+	if(argc == 1)
+	{
+		printf("Not argument. Try -h for help\n");
+		return 1;
+	}
+	
+	while( (key = getopt(argc, argv, "hf:m:")) != -1)
 	{
 		switch(key)
 		{
 			case 'h':
-			
+				printf("-h - List of keys that handles the given application and their purpose.\n");
+				printf("-f <filename.csv> - directory input csv file to process.\n");
+				printf("-m <number month> - if this key is given, then it is displayed only statistics for the specified month.\n");
+				return 3;
 			break;
 			
 			case 'f':
-			
+				strcpy(nameDirr, optarg);
 			break;
 			
 			case 'm':
-			
+				strcpy(numberM, optarg);
+				numberMonth = atoi(numberM);
 			break;
 			
-			default:
-			
+			case '?':
+				printf("Unknown argument: %s Try -h for help\n", argv[optind-1]);
+				return 2;
 			break;
 		}
-	}*/
+	}
 	
 	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
 	
@@ -53,14 +65,10 @@ int main(int argc, char **argv)
 	statYear[0] = middleTemperatureYear(dataTemperature, countSensorMeasurements);
 	statYear[1] = minTemperatureYear(dataTemperature, countSensorMeasurements);
 	statYear[2] = maxTemperatureYear(dataTemperature, countSensorMeasurements);
-	
-	//printf("\n%6.2f %3.f %3.0f\n", statYear[0], statYear[1], statYear[2]);
 		
 	//printDataTemperature(dataTemperature, countSensorMeasurements);
 	
 	printStat(statMonth, statYear, countSensorMeasurements, numberMonth);
-	
-	//printf("Not ERROR");
 	
 	return 0;
 }

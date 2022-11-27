@@ -39,6 +39,6 @@ int maxTemperatureYear(struct sensorTemperature*, uint32_t);							//макси�
 
 void printDataTemperature(struct sensorTemperature*, uint32_t);							//печать счиатанных данных
 
-void printStat(float (*)[], float*, uint32_t, uint8_t);											//печать статистики
+void printStat(float (*)[], float*, uint32_t, uint8_t);									//печать статистики
 
 #endif

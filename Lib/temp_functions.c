@@ -288,6 +288,8 @@ void printHeadTable()
 	
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
+		
+	printf("\n");
 }
 //Функция печати статистики за месяц
 void printStatMonth(uint8_t number, float (*monthStat)[4])
@@ -295,7 +297,7 @@ void printStatMonth(uint8_t number, float (*monthStat)[4])
 	switch(number)
 	{
 		case 0:
-			printf("\n||%8c%s%7c|", ' ', "JAN", ' ');
+			printf("||%8c%s%7c|", ' ', "JAN", ' ');
 		break;
 		
 		case 1:
@@ -393,14 +395,14 @@ void printError(uint32_t countMeasurements)
 	{
 		printf("\n|| Not Error Data%83c||", ' ');
 		printf("\n||%98c||", ' ');
-		printf("\n|| For the year the data loss was %5.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
-		printf(" %6d error data. %6d no measurement.%17c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
+		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
+		printf(" %6d error data. %6d no measurement.%16c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
 	}
 	else
 	{
 		printf("\n||%98c||", ' ');
-		printf("\n|| For the year the data loss was %5.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
-		printf(" %6d error data. %6d no measurement.%17c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
+		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
+		printf(" %6d error data. %6d no measurement.%16c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
 	}
 
 	for(int i = 0; i < 102; i++)
@@ -418,7 +420,7 @@ void printStat(float (*monthStat)[4], float *yearStat, uint32_t countMeasurement
 		for(int i = 0; i < 12; i++)
 			printStatMonth(i, monthStat);
 	else
-		printStatMonth(monthNumber, monthStat);
+		printStatMonth(monthNumber - 1, monthStat);
 		
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');

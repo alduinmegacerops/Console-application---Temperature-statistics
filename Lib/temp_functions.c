@@ -5,12 +5,22 @@ void errorData(uint32_t lineFileDataError, uint32_t errCount)
 {
 	FILE *err;
 	
-	if (errCount == 1)
-		err = fopen("Error_Data", "w");
-	else
-		err = fopen("Error_Data", "a");
-	
-	fprintf(err, "Data file error in line %d\n", lineFileDataError);
+	switch(errCount)
+	{
+		case 0:
+			err = fopen("Error_Data", "w");
+		break;
+		
+		case 1:
+			err = fopen("Error_Data", "w");
+			fprintf(err, "%d", lineFileDataError);
+		break;
+		
+		default:
+			err = fopen("Error_Data", "a");
+			fprintf(err, "\n%d", lineFileDataError);
+		break;
+	}
 	
 	fclose(err);
 }
@@ -30,7 +40,7 @@ void swap(struct sensorTemperature* dataTemperature, uint32_t i, uint32_t j)
 //функция сортировки
 void sortByDate(struct sensorTemperature* dataTemperature, uint32_t countMeasurements, char *nameFile)
 {
-	if(strcmp(nameFile, "Data/temperature_big.csv"))
+	if(strcmp(nameFile, "Data/temperature_big.csv") && strcmp(nameFile, "Data/temperature_big_t.csv"))
 		for(int i = 0; i < countMeasurements; ++i)
 			for (int j = i; j < countMeasurements; ++j)
 				if(dateToInt(dataTemperature + i) >= dateToInt(dataTemperature + j))
@@ -40,7 +50,7 @@ void sortByDate(struct sensorTemperature* dataTemperature, uint32_t countMeasure
 void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *countMeasurements, char *nameFile)
 {
 	char buffer[21];
-	uint32_t errorCount = 1;
+	uint32_t errorCount = 0;
 	
 	FILE *in;
 	
@@ -64,8 +74,8 @@ void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *cou
 			else
 			{
 				flag = 1;
-				errorData(*countMeasurements + errorCount, errorCount);
 				errorCount++;
+				errorData(*countMeasurements + errorCount, errorCount);
 				(*countMeasurements)--;
 				memset(buffer, 0, sizeof(buffer));
 				break;
@@ -83,6 +93,9 @@ void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *cou
 			memset(buffer, 0, sizeof(buffer));
 		}
 	}
+	
+	if(errorCount == 0)
+		errorData(0, errorCount);
 	
 	fclose(in);
 }
@@ -168,7 +181,7 @@ void middleTemperatureMonth(struct sensorTemperature* dataTemperature, uint32_t 
 			stat[i][1] = sum[i] / counter[i];
 	}
 }
-//функция для нахождения минимальной температура за месяц
+//функция для нахождения минимальной температуры за месяц
 void minTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat)[4])
 {
 	int minMonth[12] = {0}, count = 0;
@@ -188,7 +201,7 @@ void minTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat
 	for(int i = 0; i < 12; i++)
 		stat[i][2] = minMonth[i];
 }
-//функция для нахождения максимальной температура за месяц
+//функция для нахождения максимальной температуры за месяц
 void maxTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat)[4])
 {
 	int maxMonth[12] = {0}, count = 0;
@@ -218,7 +231,7 @@ float middleTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t 
 		
 	return sumTemperatureYear / countMeasurements;
 }
-//функция для нахождения минимальной температура за год
+//функция для нахождения минимальной температуры за год
 int minTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
 {
 	int minTempYear = dataTemperature -> temperature;
@@ -229,7 +242,7 @@ int minTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t count
 			
 	return minTempYear;
 }
-//функция для нахождения максимальной температура за год
+//функция для нахождения максимальной температуры за год
 int maxTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
 {
 	int maxTempYear = dataTemperature -> temperature;
@@ -254,8 +267,163 @@ void printDataTemperature(struct sensorTemperature* dataTemperature, uint32_t co
 													(dataTemperature + i) -> temperature);
 	}
 }
-//функция для печати статистики
-void printStat(struct sensorTemperature* dataTemperature)	
+//Функция печати имени таблицы
+void printNameTable()
 {
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
+		
+	printf("\n||%30c%s%30c||\n", ' ', "Temperature statistics from the sensor", ' ');
 	
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
 }
+//Функция печати шапки таблицы
+void printHeadTable()
+{
+	printf("\n||%7c%s%6c|", ' ', "Month", ' ');
+	printf("|%6c%s%6c|", ' ', "Middle Month", ' ');
+	printf("|%6c%s%6c|", ' ', "Minimum Month", ' ');
+	printf("|%6c%s%6c||\n", ' ', "Maximum Month", ' ');
+	
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
+}
+//Функция печати статистики за месяц
+void printStatMonth(uint8_t number, float (*monthStat)[4])
+{
+	switch(number)
+	{
+		case 0:
+			printf("\n||%8c%s%7c|", ' ', "JAN", ' ');
+		break;
+		
+		case 1:
+			printf("||%8c%s%7c|", ' ', "FEB", ' ');
+		break;
+		
+		case 2:
+			printf("||%8c%s%7c|", ' ', "MAR", ' ');
+		break;
+		
+		case 3:
+			printf("||%8c%s%7c|", ' ', "APR", ' ');
+		break;
+		
+		case 4:
+			printf("||%8c%s%7c|", ' ', "MAY", ' ');
+		break;
+		
+		case 5:
+			printf("||%8c%s%7c|", ' ', "JUN", ' ');
+		break;
+		
+		case 6:
+			printf("||%8c%s%7c|", ' ', "JUL", ' ');
+		break;
+		
+		case 7:
+			printf("||%8c%s%7c|", ' ', "AUG", ' ');
+		break;
+		
+		case 8:
+			printf("||%8c%s%7c|", ' ', "SEP", ' ');
+		break;
+		
+		case 9:
+			printf("||%8c%s%7c|", ' ', "OCT", ' ');
+		break;
+		
+		case 10:
+			printf("||%8c%s%7c|", ' ', "NOV", ' ');
+		break;
+		
+		case 11:
+			printf("||%8c%s%7c|", ' ', "DEC", ' ');
+		break;
+	}
+	
+	if(monthStat[number][0] == 0)
+	{
+		printf("|%9c%6.2f%9c|", ' ', monthStat[number][1], ' ');
+		printf("|%11c%3.0f%11c|", ' ', monthStat[number][2], ' ');
+		printf("|%11c%3.0f%11c||\n", ' ', monthStat[number][3], ' ');
+	}
+	else
+	{
+		printf("|%8c%s%8c|", ' ', "Not data", ' ');
+		printf("|%9c%s%8c|", ' ', "Not data", ' ');
+		printf("|%9c%s%8c||\n", ' ', "Not data", ' ');
+	}
+}
+//Функция печати статистики за год
+void printStatYear(float *yearStat)
+{
+	printf("\n|| Temperature statistics for the year:");
+	printf(" Middle Year = %6.2f", yearStat[0]);
+	printf(" Minimum Year = %3.f", yearStat[1]);
+	printf(" Maximum Year = %3.0f  ||\n", yearStat[2]);
+	
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
+}
+//Функция печати ошибок в данных
+void printError(uint32_t countMeasurements)
+{
+	int countErr = 0, temp = 0;
+	
+	FILE *err;
+	err = fopen("Error_Data", "r");	
+	
+	printf("\n||%41c%s%41c||", ' ', "Statictics Error", ' ');
+	printf("\n||%98c||", ' ');
+	
+	while(!feof(err))
+	{
+		fscanf(err, "%d", &temp);
+
+		if(temp != 0)
+		{
+			printf("\n|| Data file error in line %6d%67c||", temp, ' ');
+			countErr++;
+		}
+	}
+
+	if(countErr == 0)
+	{
+		printf("\n|| Not Error Data%83c||", ' ');
+		printf("\n||%98c||", ' ');
+		printf("\n|| For the year the data loss was %5.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
+		printf(" %6d error data. %6d no measurement.%17c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
+	}
+	else
+	{
+		printf("\n||%98c||", ' ');
+		printf("\n|| For the year the data loss was %5.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
+		printf(" %6d error data. %6d no measurement.%17c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
+	}
+
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
+		
+	fclose(err);
+}
+//функция для печати статистики
+void printStat(float (*monthStat)[4], float *yearStat, uint32_t countMeasurements, uint8_t monthNumber)	
+{
+	printNameTable();
+	printHeadTable();
+	
+	if(monthNumber == 0)
+		for(int i = 0; i < 12; i++)
+			printStatMonth(i, monthStat);
+	else
+		printStatMonth(monthNumber, monthStat);
+		
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
+		
+	printStatYear(yearStat);
+	
+	printError(countMeasurements);
+}	

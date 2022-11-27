@@ -5,7 +5,8 @@ int main(int argc, char **argv)
 	struct sensorTemperature *dataTemperature = NULL;
 	
 	uint32_t countSensorMeasurements = 0;
-	uint8_t numberMonth = 4;
+	uint8_t numberMonth = 0;
+	int key = 0;
 	
 	float statMonth[12][4] = {0};
 	float statYear[3] = {0};
@@ -19,6 +20,28 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	
+	/*while( (key = getopt(argc, argv, "hf:m::")) != -1)
+	{
+		switch(key)
+		{
+			case 'h':
+			
+			break;
+			
+			case 'f':
+			
+			break;
+			
+			case 'm':
+			
+			break;
+			
+			default:
+			
+			break;
+		}
+	}*/
+	
 	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
 	
 	sortByDate(dataTemperature, countSensorMeasurements, nameDirr);
@@ -31,19 +54,13 @@ int main(int argc, char **argv)
 	statYear[1] = minTemperatureYear(dataTemperature, countSensorMeasurements);
 	statYear[2] = maxTemperatureYear(dataTemperature, countSensorMeasurements);
 	
-	for(int i = 0; i < 12; i++)
-	{
-		if(statMonth[i][0] == 0)
-			printf("%05.2f %3.0f %3.0f\n", statMonth[i][1], statMonth[i][2], statMonth[i][3]);
-		else
-			printf("Not temperature in %02d month\n", i + 1);
-	}
-	
-	printf("%05.2f %3.f %3.0f\n", statYear[0], statYear[1], statYear[2]);
+	//printf("\n%6.2f %3.f %3.0f\n", statYear[0], statYear[1], statYear[2]);
 		
-	printDataTemperature(dataTemperature, countSensorMeasurements);
+	//printDataTemperature(dataTemperature, countSensorMeasurements);
 	
-	printf("Not ERROR");
+	printStat(statMonth, statYear, countSensorMeasurements, numberMonth);
+	
+	//printf("Not ERROR");
 	
 	return 0;
 }

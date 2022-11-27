@@ -1,7 +1,12 @@
+#ifndef _TEMP_FUNCTIONS_H
+
+#define _TEMP_FUNCTIONS_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define MAX_COUNT_YEAR_T 525600		//максимальное количество измерений датичка температуры за год
 #define MAX_COUNT_MONTH_T 44640		//максимальное количество измерений датичка температуры за месяц
@@ -34,4 +39,6 @@ int maxTemperatureYear(struct sensorTemperature*, uint32_t);							//макси�
 
 void printDataTemperature(struct sensorTemperature*, uint32_t);							//печать счиатанных данных
 
-void printStat(struct sensorTemperature*);												//печать статистики
+void printStat(float (*)[], float*, uint32_t, uint8_t);											//печать статистики
+
+#endif

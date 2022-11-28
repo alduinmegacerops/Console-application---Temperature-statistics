@@ -21,7 +21,7 @@ struct sensorTemperature		//структура для занчений с дат
 	int temperature;			//температура
 };
 
-void addDataTemperature(struct sensorTemperature*, uint32_t*, char*);					//считывание и парсинг данных
+void addDataTemperature(struct sensorTemperature**, uint32_t*, char*);					//считывание и парсинг данных
 
 void sortByDate(struct sensorTemperature*, uint32_t, char*);							//сортровка по дате
 

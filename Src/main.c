@@ -52,11 +52,10 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
-	printf("1");
-	printf("%d", dataTemperature->year);
+	addDataTemperature(&dataTemperature, &countSensorMeasurements, nameDirr);
+
 	sortByDate(dataTemperature, countSensorMeasurements, nameDirr);
-	printf("2 ");
+
 	middleTemperatureMonth(dataTemperature, countSensorMeasurements, statMonth);
 	minTemperatureMonth(dataTemperature, statMonth);
 	maxTemperatureMonth(dataTemperature, statMonth);

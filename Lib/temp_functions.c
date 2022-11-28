@@ -47,7 +47,7 @@ void sortByDate(struct sensorTemperature* dataTemperature, uint32_t countMeasure
 					swap(dataTemperature, i, j);
 }
 //функция для считывания и парсинга данных	
-void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *countMeasurements, char *nameFile)
+void addDataTemperature(struct sensorTemperature** dataTemperature, uint32_t *countMeasurements, char *nameFile)
 {
 	char buffer[21];
 	uint32_t errorCount = 0;
@@ -84,22 +84,15 @@ void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *cou
 //парсим данные из буфера по полям структуры		
 		if(flag == 0)
 		{
-			dataTemperature = realloc(dataTemperature, sizeof(struct sensorTemperature) * (*countMeasurements + 1));
+			*dataTemperature = realloc(*dataTemperature, sizeof(struct sensorTemperature) * (*countMeasurements + 1));
 			
-			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&(dataTemperature + *countMeasurements) -> year, 
-												&(dataTemperature + *countMeasurements) -> month,
-												&(dataTemperature + *countMeasurements) -> day,
-												&(dataTemperature + *countMeasurements) -> hour,
-												&(dataTemperature + *countMeasurements) -> minute,
-												&(dataTemperature + *countMeasurements) -> temperature);
+			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&(*dataTemperature + *countMeasurements) -> year, 
+												&(*dataTemperature + *countMeasurements) -> month,
+												&(*dataTemperature + *countMeasurements) -> day,
+												&(*dataTemperature + *countMeasurements) -> hour,
+												&(*dataTemperature + *countMeasurements) -> minute,
+												&(*dataTemperature + *countMeasurements) -> temperature);
 
-			printf("%lld ", *countMeasurements);
-			printf("%04d %02d %02d %02d %02d %3d\n",(dataTemperature + *countMeasurements) -> year,
-													(dataTemperature + *countMeasurements) -> month,
-													(dataTemperature + *countMeasurements) -> day,
-													(dataTemperature + *countMeasurements) -> hour,
-													(dataTemperature + *countMeasurements) -> minute,
-													(dataTemperature + *countMeasurements) -> temperature);
 			memset(buffer, 0, sizeof(buffer));
 		}
 	}

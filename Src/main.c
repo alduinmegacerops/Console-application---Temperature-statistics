@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-	struct sensorTemperature *dataTemperature = NULL;
+	struct sensorTemperature *dataTemperature;
 	
 	uint32_t countSensorMeasurements = 0;
 	int key = 0;
@@ -14,12 +14,10 @@ int main(int argc, char **argv)
 	char nameDirr[100];
 	char numberM[10];
 	
-	//Выделение памяти под массив структур и проверка выделилась ли память
-	if (!(dataTemperature = malloc(MAX_COUNT_YEAR_T * sizeof(struct sensorTemperature))))
-	{
-		printf("Error: can't allocate memory");
-		exit(1);
-	}
+	//Выделение памяти под массив структур
+	//dataTemperature = malloc(sizeof(struct sensorTemperature));
+	
+	dataTemperature = NULL;
 	
 	if(argc == 1)
 	{
@@ -27,7 +25,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	
-	while( (key = getopt(argc, argv, "hf:m:")) != -1)
+	while((key = getopt(argc, argv, "hf:m:")) != -1)
 	{
 		switch(key)
 		{
@@ -55,9 +53,10 @@ int main(int argc, char **argv)
 	}
 	
 	addDataTemperature(dataTemperature, &countSensorMeasurements, nameDirr);
-	
+	printf("1");
+	printf("%d", dataTemperature->year);
 	sortByDate(dataTemperature, countSensorMeasurements, nameDirr);
-	
+	printf("2 ");
 	middleTemperatureMonth(dataTemperature, countSensorMeasurements, statMonth);
 	minTemperatureMonth(dataTemperature, statMonth);
 	maxTemperatureMonth(dataTemperature, statMonth);
@@ -69,6 +68,8 @@ int main(int argc, char **argv)
 	//printDataTemperature(dataTemperature, countSensorMeasurements);
 	
 	printStat(statMonth, statYear, countSensorMeasurements, numberMonth);
+	
+	free(dataTemperature);
 	
 	return 0;
 }

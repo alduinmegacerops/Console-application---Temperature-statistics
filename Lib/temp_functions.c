@@ -67,8 +67,8 @@ void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *cou
 		}
 		while(tmp != EOF && tmp != '\n');
 //проверка буффера на корректность данных	
-		for(int i = 0; i < 21; i++)
-		{
+		for(int i = 0; i < strlen(buffer); i++)
+		{				
 			if(buffer[i] == ';' || buffer[i] == '-' || buffer[i] == ' ' || buffer[i] == 0x0 || (buffer[i] >= '0' && buffer[i] <= '9'))
 				flag = 0;
 			else
@@ -84,12 +84,22 @@ void addDataTemperature(struct sensorTemperature* dataTemperature, uint32_t *cou
 //парсим данные из буфера по полям структуры		
 		if(flag == 0)
 		{
+			dataTemperature = realloc(dataTemperature, sizeof(struct sensorTemperature) * (*countMeasurements + 1));
+			
 			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&(dataTemperature + *countMeasurements) -> year, 
 												&(dataTemperature + *countMeasurements) -> month,
 												&(dataTemperature + *countMeasurements) -> day,
 												&(dataTemperature + *countMeasurements) -> hour,
 												&(dataTemperature + *countMeasurements) -> minute,
 												&(dataTemperature + *countMeasurements) -> temperature);
+
+			printf("%lld ", *countMeasurements);
+			printf("%04d %02d %02d %02d %02d %3d\n",(dataTemperature + *countMeasurements) -> year,
+													(dataTemperature + *countMeasurements) -> month,
+													(dataTemperature + *countMeasurements) -> day,
+													(dataTemperature + *countMeasurements) -> hour,
+													(dataTemperature + *countMeasurements) -> minute,
+													(dataTemperature + *countMeasurements) -> temperature);
 			memset(buffer, 0, sizeof(buffer));
 		}
 	}

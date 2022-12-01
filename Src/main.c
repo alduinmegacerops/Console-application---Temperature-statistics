@@ -13,7 +13,6 @@ int main(int argc, char **argv)
 	int key = 0;
 	
 	uint8_t numberMonth = 0;
-
 	
 	if(argc == 1)
 	{

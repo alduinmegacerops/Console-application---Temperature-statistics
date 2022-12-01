@@ -27,7 +27,11 @@ typedef struct
 
 void addDataTemperature(data*, char*);					//считывание и парсинг данных
 
-void sortByDate(data*, char*);							//сортровка по дате
+uint64_t dateToInt(data*, uint32_t);					//функци перевода даты и временив в uint64_t
+
+void swap(data*, uint32_t, uint32_t);					//функция меняет местами i-й элемент с j-ым элементом
+
+void sortByDate(data*, char*);							//функция сортировки пузырьком
 
 void middleTemperatureMonth(data*, float (*)[]);		//среднемесячная температура
 
@@ -42,6 +46,16 @@ int minTemperatureYear(data*);							//минамальная температу
 int maxTemperatureYear(data*);							//максимальная температура за год
 
 void printDataTemperature(data*);						//печать счиатанных данных
+
+void printNameTable();									//Функция печати имени таблицы
+
+void printHeadTable();									//Функция печати шапки таблицы
+
+void printStatMonth(uint8_t, float (*)[]);				//Функция печати статистики за месяц
+
+void printStatYear(float*);								//Функция печати статистики за год
+
+void printError(data*);									//Функция печати ошибок в данных
 
 void printStat(data*, float (*)[], float*, uint8_t);	//печать статистики
 

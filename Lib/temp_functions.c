@@ -1,31 +1,5 @@
 #include "../Inc/temp_functions.h"
 
-//функци перевода даты и временив в uint64_t
-uint64_t dateToInt(data *sensor, uint32_t i)
-{
-	return 	sensor -> dataTemperature[i].minute + 
-			sensor -> dataTemperature[i].hour * 100 + 
-			sensor -> dataTemperature[i].day * 10000 + 
-			sensor -> dataTemperature[i].month * 1000000 + 
-			sensor -> dataTemperature[i].year * 100000000;
-}
-//функция меняет местами i-й элемент с j-ым элементом
-void swap(data *sensor, uint32_t i, uint32_t j)
-{
-	struct sensorTemperature temp;
-	temp = sensor -> dataTemperature[i];
-	sensor -> dataTemperature[i] = sensor -> dataTemperature[j];
-	sensor -> dataTemperature[j] = temp;
-}
-//функция сортировки пузырьком
-void sortByDate(data *sensor, char *nameFile)
-{
-	if(strcmp(nameFile, "Data/temperature_big.csv") && strcmp(nameFile, "Data/temperature_big_t.csv"))
-		for(int i = 0; i < sensor -> countSensorMeasurements; ++i)
-			for (int j = i; j < sensor -> countSensorMeasurements; ++j)
-				if(dateToInt(sensor, i) >= dateToInt(sensor, j))
-					swap(sensor, i, j);
-}
 //функция для считывания и парсинга данных	
 void addDataTemperature(data *sensor, char *nameFile)
 {	
@@ -118,7 +92,7 @@ void minTemperatureMonth(data *sensor, float (*stat)[4])
 	for(int countMonth = 0; countMonth < 12; countMonth++)
 	{
 		minMonth[countMonth] = sensor -> dataTemperature[count].temperature;
-		count++;
+		
 		while(sensor -> dataTemperature[count].month == countMonth + 1)
 		{
 			if(minMonth[countMonth] > sensor -> dataTemperature[count].temperature)
@@ -138,7 +112,7 @@ void maxTemperatureMonth(data *sensor, float (*stat)[4])
 	for(int countMonth = 0; countMonth < 12; countMonth++)
 	{
 		maxMonth[countMonth] = sensor -> dataTemperature[count].temperature;
-		count++;
+
 		while(sensor -> dataTemperature[count].month == countMonth + 1)
 		{
 			if(maxMonth[countMonth] < sensor -> dataTemperature[count].temperature)
@@ -195,105 +169,4 @@ void printDataTemperature(data *sensor)
 													sensor -> dataTemperature[i].minute,
 													sensor -> dataTemperature[i].temperature);
 	}
-}
-//Функция печати имени таблицы
-void printNameTable()
-{
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-		
-	printf("\n||%30c%s%30c||\n", ' ', "Temperature statistics from the sensor", ' ');
-	
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-}
-//Функция печати шапки таблицы
-void printHeadTable()
-{
-	printf("\n||%7c%s%6c|", ' ', "Month", ' ');
-	printf("|%6c%s%6c|", ' ', "Middle Month", ' ');
-	printf("|%6c%s%6c|", ' ', "Minimum Month", ' ');
-	printf("|%6c%s%6c||\n", ' ', "Maximum Month", ' ');
-	
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-		
-	printf("\n");
-}
-//Функция печати статистики за месяц
-void printStatMonth(uint8_t number, float (*monthStat)[4])
-{
-	char months[12][4] = {{"JAN"}, {"FEB"}, {"MAR"}, {"APR"}, {"MAY"}, {"JUN"}, {"JUL"}, {"AUG"}, {"SEP"}, {"OCT"}, {"NOV"}, {"DEC"}}; 
-	
-	printf("||%8c%s%7c|", ' ', months[number], ' ');
-
-	
-	if(monthStat[number][0] == 0)
-	{
-		printf("|%9c%6.2f%9c|", ' ', monthStat[number][1], ' ');
-		printf("|%11c%3.0f%11c|", ' ', monthStat[number][2], ' ');
-		printf("|%11c%3.0f%11c||\n", ' ', monthStat[number][3], ' ');
-	}
-	else
-	{
-		printf("|%8c%s%8c|", ' ', "Not data", ' ');
-		printf("|%9c%s%8c|", ' ', "Not data", ' ');
-		printf("|%9c%s%8c||\n", ' ', "Not data", ' ');
-	}
-}
-//Функция печати статистики за год
-void printStatYear(float *yearStat)
-{
-	printf("\n|| Temperature statistics for the year:");
-	printf(" Middle Year = %6.2f", yearStat[0]);
-	printf(" Minimum Year = %3.f", yearStat[1]);
-	printf(" Maximum Year = %3.0f  ||\n", yearStat[2]);
-	
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-}
-//Функция печати ошибок в данных
-void printError(data *sensor)
-{	
-	printf("\n||%41c%s%41c||", ' ', "Statictics Error", ' ');
-	printf("\n||%98c||", ' ');
-	
-	for(int i = 0; i < sensor -> errorCount; i++ )
-		printf("\n|| Data file error in line %6d%67c||", sensor -> lineFileDataError[i], ' ');
-
-	if(sensor -> errorCount == 0)
-	{
-		printf("\n|| Not Error Data%83c||", ' ');
-		printf("\n||%98c||", ' ');
-		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
-		printf(" %6d error data. %6d no measurement.%16c||\n", sensor -> errorCount, MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements - sensor -> errorCount, ' ');
-	}
-	else
-	{
-		printf("\n||%98c||", ' ');
-		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
-		printf(" %6d error data. %6d no measurement.%16c||\n", sensor -> errorCount, MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements - sensor -> errorCount, ' ');
-	}
-
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-}
-//функция для печати статистики
-void printStat(data *sensor, float (*monthStat)[4], float *yearStat, uint8_t monthNumber)	
-{
-	printNameTable();
-	printHeadTable();
-	
-	if(monthNumber == 0)
-		for(int i = 0; i < 12; i++)
-			printStatMonth(i, monthStat);
-	else
-		printStatMonth(monthNumber - 1, monthStat);
-		
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-		
-	printStatYear(yearStat);
-	
-	printError(sensor);
 }

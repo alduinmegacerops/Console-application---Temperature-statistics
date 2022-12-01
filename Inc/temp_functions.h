@@ -2,28 +2,27 @@
 
 #define _TEMP_FUNCTIONS_H
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
+#include "../Inc/main.h"
 
-#define MAX_COUNT_YEAR_T 525600		//максимальное количество измерений датичка температуры за год
-#define MAX_COUNT_MONTH_T 44640		//максимальное количество измерений датичка температуры за месяц
+#define MAX_COUNT_YEAR_T 525600							//максимальное количество измерений датичка температуры за год
+#define MAX_COUNT_MONTH_T 44640							//максимальное количество измерений датичка температуры за месяц
 
-struct sensorTemperature		//структура для занчений с датчика
+struct sensorTemperature								//структура для занчений с датчика
 {
-	uint16_t year;				//год
-	uint8_t month;				//месяц
-	uint8_t day;				//деннь
-	uint8_t hour;				//часы
-	uint8_t minute;				//минуты
-	int temperature;			//температура
+	uint16_t year;										//год
+	uint8_t month;										//месяц
+	uint8_t day;										//деннь
+	uint8_t hour;										//часы
+	uint8_t minute;										//минуты
+	int temperature;									//температура
 };
 
 typedef struct
 {
-	struct sensorTemperature *dataTemperature;
-	uint32_t countSensorMeasurements;
+	struct sensorTemperature *dataTemperature;			//структура для хранения валидных данных
+	uint32_t countSensorMeasurements;					//количество валидных измерений
+	uint32_t errorCount;								//количество не валидных измерений
+	uint32_t *lineFileDataError;						//массив где хранятся номера линий файла где битые данные
 } data;
 
 void addDataTemperature(data*, char*);					//считывание и парсинг данных

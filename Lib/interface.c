@@ -1,5 +1,29 @@
 #include "../Inc/temp_functions.h"
 
+//Обработка ошибок
+void errorData(uint32_t lineFileDataError, uint32_t errCount)
+{
+	FILE *err;
+	
+	switch(errCount)
+	{
+		case 0:
+			err = fopen("Error_Data", "w");
+		break;
+		
+		case 1:
+			err = fopen("Error_Data", "w");
+			fprintf(err, "%d", lineFileDataError);
+		break;
+		
+		default:
+			err = fopen("Error_Data", "a");
+			fprintf(err, "\n%d", lineFileDataError);
+		break;
+	}
+	
+	fclose(err);
+}
 //функци перевода даты и временив в uint64_t
 uint64_t dateToInt(data *sensor, uint32_t i)
 {
@@ -17,7 +41,7 @@ void swap(data *sensor, uint32_t i, uint32_t j)
 	sensor -> dataTemperature[i] = sensor -> dataTemperature[j];
 	sensor -> dataTemperature[j] = temp;
 }
-//функция сортировки пузырьком
+//функция сортировки
 void sortByDate(data *sensor, char *nameFile)
 {
 	if(strcmp(nameFile, "Data/temperature_big.csv") && strcmp(nameFile, "Data/temperature_big_t.csv"))
@@ -28,13 +52,11 @@ void sortByDate(data *sensor, char *nameFile)
 }
 //функция для считывания и парсинга данных	
 void addDataTemperature(data *sensor, char *nameFile)
-{	
-	//Инициализируем структуру
-	sensor -> dataTemperature = NULL;
-	sensor -> errorCount = 0;
-	sensor -> lineFileDataError = NULL;
-	
+{
 	char buffer[21];
+	uint32_t errorCount = 0;
+	
+	sensor -> dataTemperature = NULL;
 	
 	FILE *in;
 	
@@ -45,13 +67,13 @@ void addDataTemperature(data *sensor, char *nameFile)
 		char tmp;
 		
 		uint8_t flag = 1;
-		//цикл пропускает оставшиеся символы до конца файла или строки (на случай, если строка была чересчур длинной
+//цикл пропускает оставшиеся символы до конца файла или строки (на случай, если строка была чересчур длинной
 		do
 		{
 			tmp = fgetc(in);
 		}
 		while(tmp != EOF && tmp != '\n');
-		//проверка буффера на корректность данных	
+//проверка буффера на корректность данных	
 		for(int i = 0; i < strlen(buffer); i++)
 		{				
 			if(buffer[i] == ';' || buffer[i] == '-' || buffer[i] == ' ' || buffer[i] == 0x0 || (buffer[i] >= '0' && buffer[i] <= '9'))
@@ -59,35 +81,31 @@ void addDataTemperature(data *sensor, char *nameFile)
 			else
 			{
 				flag = 1;
-				//Обработка ошибок. Плюс новая ошибка	
-				sensor -> errorCount++;
-				//Переопределяем память под новую ошибку
-				sensor -> lineFileDataError = realloc(sensor -> lineFileDataError, sizeof(uint32_t) * (sensor -> errorCount + 1));
-				//Запоминаем номер линии где встретились битые данные
-				sensor -> lineFileDataError[sensor -> errorCount - 1] = sensor -> countSensorMeasurements + sensor -> errorCount;
-				//Уменьшаем счетчик валидных данных
+				errorCount++;
+				errorData(sensor -> countSensorMeasurements + errorCount, errorCount);
 				sensor -> countSensorMeasurements--;
-				//Освобождаем буффер и заканчиваем проверку буффера
 				memset(buffer, 0, sizeof(buffer));
 				break;
 			}
 		}
-		//парсим данные из буфера по полям структуры		
+//парсим данные из буфера по полям структуры		
 		if(flag == 0)
 		{
-			//Переопределяем память под новые данные
 			sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
-			//Записываем новые данные
+			
 			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&sensor -> dataTemperature[sensor -> countSensorMeasurements].year, 
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].month,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].day,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].hour,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].minute,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].temperature);
-			//Освобождаем буффер
+
 			memset(buffer, 0, sizeof(buffer));
 		}
 	}
+
+	if(errorCount == 0)
+		errorData(0, errorCount);
 	
 	fclose(in);
 }
@@ -253,30 +271,45 @@ void printStatYear(float *yearStat)
 		printf("%c", '=');
 }
 //Функция печати ошибок в данных
-void printError(data *sensor)
-{	
+void printError(uint32_t countMeasurements)
+{
+	int countErr = 0, temp = 0;
+	
+	FILE *err;
+	err = fopen("Error_Data", "r");	
+	
 	printf("\n||%41c%s%41c||", ' ', "Statictics Error", ' ');
 	printf("\n||%98c||", ' ');
 	
-	for(int i = 0; i < sensor -> errorCount; i++ )
-		printf("\n|| Data file error in line %6d%67c||", sensor -> lineFileDataError[i], ' ');
+	while(!feof(err))
+	{
+		fscanf(err, "%d", &temp);
 
-	if(sensor -> errorCount == 0)
+		if(temp != 0)
+		{
+			printf("\n|| Data file error in line %6d%67c||", temp, ' ');
+			countErr++;
+		}
+	}
+
+	if(countErr == 0)
 	{
 		printf("\n|| Not Error Data%83c||", ' ');
 		printf("\n||%98c||", ' ');
-		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
-		printf(" %6d error data. %6d no measurement.%16c||\n", sensor -> errorCount, MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements - sensor -> errorCount, ' ');
+		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
+		printf(" %6d error data. %6d no measurement.%16c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
 	}
 	else
 	{
 		printf("\n||%98c||", ' ');
-		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
-		printf(" %6d error data. %6d no measurement.%16c||\n", sensor -> errorCount, MAX_COUNT_YEAR_T - sensor -> countSensorMeasurements - sensor -> errorCount, ' ');
+		printf("\n|| For the year the data loss was %6.2f%%.", (float)(MAX_COUNT_YEAR_T - countMeasurements) / (float)MAX_COUNT_YEAR_T * 100);
+		printf(" %6d error data. %6d no measurement.%16c||\n", countErr, MAX_COUNT_YEAR_T - countMeasurements - countErr, ' ');
 	}
 
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
+		
+	fclose(err);
 }
 //функция для печати статистики
 void printStat(data *sensor, float (*monthStat)[4], float *yearStat, uint8_t monthNumber)	
@@ -295,5 +328,5 @@ void printStat(data *sensor, float (*monthStat)[4], float *yearStat, uint8_t mon
 		
 	printStatYear(yearStat);
 	
-	printError(sensor);
+	printError(sensor -> countSensorMeasurements);
 }

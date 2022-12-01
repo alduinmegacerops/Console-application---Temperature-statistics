@@ -1,19 +1,18 @@
 #include "../Inc/main.h"
-#include "../Inc/temp_functions.h"
 
 int main(int argc, char **argv)
 {
 	data sensor;
 	
-	int key = 0;
-	
-	uint8_t numberMonth = 0;
-	
 	float statMonth[12][4] = {0};
 	float statYear[3] = {0};
 	
-	char nameDirr[100];
-	char numberM[10];
+	char inNameFile[100];
+	char inNumberMonth[3];
+	
+	int key = 0;
+	
+	uint8_t numberMonth = 0;
 
 	
 	if(argc == 1)
@@ -34,12 +33,12 @@ int main(int argc, char **argv)
 			break;
 			
 			case 'f':
-				strcpy(nameDirr, optarg);
+				strcpy(inNameFile, optarg);
 			break;
 			
 			case 'm':
-				strcpy(numberM, optarg);
-				numberMonth = atoi(numberM);
+				strcpy(inNumberMonth, optarg);
+				numberMonth = atoi(inNumberMonth);
 			break;
 			
 			case '?':
@@ -49,9 +48,9 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	addDataTemperature(&sensor, nameDirr);
+	addDataTemperature(&sensor, inNameFile);
 
-	sortByDate(&sensor, nameDirr);
+	sortByDate(&sensor, inNameFile);
 
 	middleTemperatureMonth(&sensor, statMonth);
 	minTemperatureMonth(&sensor, statMonth);
@@ -62,10 +61,11 @@ int main(int argc, char **argv)
 	statYear[2] = maxTemperatureYear(&sensor);
 		
 	//printDataTemperature(&sensor);
-	
+
 	printStat(&sensor, statMonth, statYear, numberMonth);
 	
-	//free(dataTemperature);
+	free(sensor.dataTemperature);
+	free(sensor.lineFileDataError);
 	
 	return 0;
 }

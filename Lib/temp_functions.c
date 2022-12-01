@@ -25,40 +25,47 @@ void errorData(uint32_t lineFileDataError, uint32_t errCount)
 	fclose(err);
 }
 //функци перевода даты и временив в uint64_t
-uint64_t dateToInt(struct sensorTemperature* dataTemperature)
+uint64_t dateToInt(data *sensor, uint32_t i)
 {
-	return dataTemperature -> minute + dataTemperature -> hour * 100 + dataTemperature -> day * 10000 + dataTemperature -> month * 1000000 + dataTemperature -> year * 100000000;
+	return 	sensor -> dataTemperature[i].minute + 
+			sensor -> dataTemperature[i].hour * 100 + 
+			sensor -> dataTemperature[i].day * 10000 + 
+			sensor -> dataTemperature[i].month * 1000000 + 
+			sensor -> dataTemperature[i].year * 100000000;
 }
 //функция меняет местами i-й элемент с j-ым элементом
-void swap(struct sensorTemperature* dataTemperature, uint32_t i, uint32_t j)
+void swap(data *sensor, uint32_t i, uint32_t j)
 {
 	struct sensorTemperature temp;
-	temp = dataTemperature[i];
-	dataTemperature[i] = dataTemperature[j];
-	dataTemperature[j] = temp;
+	temp = sensor -> dataTemperature[i];
+	sensor -> dataTemperature[i] = sensor -> dataTemperature[j];
+	sensor -> dataTemperature[j] = temp;
 }
 //функция сортировки
-void sortByDate(struct sensorTemperature* dataTemperature, uint32_t countMeasurements, char *nameFile)
+void sortByDate(data *sensor, char *nameFile)
 {
 	if(strcmp(nameFile, "Data/temperature_big.csv") && strcmp(nameFile, "Data/temperature_big_t.csv"))
-		for(int i = 0; i < countMeasurements; ++i)
-			for (int j = i; j < countMeasurements; ++j)
-				if(dateToInt(dataTemperature + i) >= dateToInt(dataTemperature + j))
-					swap(dataTemperature, i, j);
+		for(int i = 0; i < sensor -> countSensorMeasurements; ++i)
+			for (int j = i; j < sensor -> countSensorMeasurements; ++j)
+				if(dateToInt(sensor, i) >= dateToInt(sensor, j))
+					swap(sensor, i, j);
 }
 //функция для считывания и парсинга данных	
-void addDataTemperature(struct sensorTemperature** dataTemperature, uint32_t *countMeasurements, char *nameFile)
+void addDataTemperature(data *sensor, char *nameFile)
 {
 	char buffer[21];
 	uint32_t errorCount = 0;
+	
+	sensor -> dataTemperature = NULL;
 	
 	FILE *in;
 	
 	in = fopen(nameFile, "r");
 	
-	for(*countMeasurements; fscanf(in, "%21[^\n]s", buffer) != -1; (*countMeasurements)++)
+	for(sensor -> countSensorMeasurements = 0; fscanf(in, "%21[^\n]", buffer) != -1; sensor -> countSensorMeasurements++)
 	{
 		char tmp;
+		
 		uint8_t flag = 1;
 //цикл пропускает оставшиеся символы до конца файла или строки (на случай, если строка была чересчур длинной
 		do
@@ -75,8 +82,8 @@ void addDataTemperature(struct sensorTemperature** dataTemperature, uint32_t *co
 			{
 				flag = 1;
 				errorCount++;
-				errorData(*countMeasurements + errorCount, errorCount);
-				(*countMeasurements)--;
+				errorData(sensor -> countSensorMeasurements + errorCount, errorCount);
+				sensor -> countSensorMeasurements--;
 				memset(buffer, 0, sizeof(buffer));
 				break;
 			}
@@ -84,96 +91,33 @@ void addDataTemperature(struct sensorTemperature** dataTemperature, uint32_t *co
 //парсим данные из буфера по полям структуры		
 		if(flag == 0)
 		{
-			*dataTemperature = realloc(*dataTemperature, sizeof(struct sensorTemperature) * (*countMeasurements + 1));
+			sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
 			
-			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&(*dataTemperature + *countMeasurements) -> year, 
-												&(*dataTemperature + *countMeasurements) -> month,
-												&(*dataTemperature + *countMeasurements) -> day,
-												&(*dataTemperature + *countMeasurements) -> hour,
-												&(*dataTemperature + *countMeasurements) -> minute,
-												&(*dataTemperature + *countMeasurements) -> temperature);
+			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&sensor -> dataTemperature[sensor -> countSensorMeasurements].year, 
+												&sensor -> dataTemperature[sensor -> countSensorMeasurements].month,
+												&sensor -> dataTemperature[sensor -> countSensorMeasurements].day,
+												&sensor -> dataTemperature[sensor -> countSensorMeasurements].hour,
+												&sensor -> dataTemperature[sensor -> countSensorMeasurements].minute,
+												&sensor -> dataTemperature[sensor -> countSensorMeasurements].temperature);
 
 			memset(buffer, 0, sizeof(buffer));
 		}
 	}
-	
+
 	if(errorCount == 0)
 		errorData(0, errorCount);
 	
 	fclose(in);
 }
 //функция для расчета среднемесячной температуры
-void middleTemperatureMonth(struct sensorTemperature* dataTemperature, uint32_t countMeasurements, float (*stat)[4])
+void middleTemperatureMonth(data *sensor, float (*stat)[4])
 {
 	float sum[12] = {0}, counter[12] = {0};
 	
-	for(int i = 0; i < countMeasurements; i++)
+	for(int i = 0; i < sensor -> countSensorMeasurements; i++)
 	{
-		switch((dataTemperature + i) -> month)
-		{
-			case 1:
-				sum[0] += (dataTemperature + i) -> temperature;
-				counter[0]++;
-				break;
-			
-			case 2:
-				sum[1] += (dataTemperature + i) -> temperature;
-				counter[1]++;
-				break;
-			
-			case 3:
-				sum[2] += (dataTemperature + i) -> temperature;
-				counter[2]++;
-				break;
-			
-			case 4:
-				sum[3] += (dataTemperature + i) -> temperature;
-				counter[3]++;
-				break;
-			
-			case 5:
-				sum[4] += (dataTemperature + i) -> temperature;
-				counter[4]++;
-				break;
-			
-			case 6:
-				sum[5] += (dataTemperature + i) -> temperature;
-				counter[5]++;
-				break;
-				
-			case 7:
-				sum[6] += (dataTemperature + i) -> temperature;
-				counter[6]++;
-				break;
-			
-			case 8:
-				sum[7] += (dataTemperature + i) -> temperature;
-				counter[7]++;
-				break;
-			
-			case 9:
-				sum[8] += (dataTemperature + i) -> temperature;
-				counter[8]++;
-				break;
-			
-			case 10:
-				sum[9] += (dataTemperature + i) -> temperature;
-				counter[9]++;
-				break;
-			
-			case 11:
-				sum[10] += (dataTemperature + i) -> temperature;
-				counter[10]++;
-				break;
-			
-			case 12:
-				sum[11] += (dataTemperature + i) -> temperature;
-				counter[11]++;
-				break;
-			
-			default:
-				break;
-		}
+		sum[sensor -> dataTemperature[i].month - 1] += sensor -> dataTemperature[i].temperature;
+		counter[sensor -> dataTemperature[i].month - 1]++;
 	}
 	
 	for(int i = 0; i < 12; i++)
@@ -185,18 +129,18 @@ void middleTemperatureMonth(struct sensorTemperature* dataTemperature, uint32_t 
 	}
 }
 //функция для нахождения минимальной температуры за месяц
-void minTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat)[4])
+void minTemperatureMonth(data *sensor, float (*stat)[4])
 {
 	int minMonth[12] = {0}, count = 0;
 	
 	for(int countMonth = 0; countMonth < 12; countMonth++)
 	{
-		minMonth[countMonth] = (dataTemperature + count) -> temperature;
+		minMonth[countMonth] = sensor -> dataTemperature[count].temperature;
 		count++;
-		while((dataTemperature + count) -> month == countMonth + 1)
+		while(sensor -> dataTemperature[count].month == countMonth + 1)
 		{
-			if(minMonth[countMonth] > (dataTemperature + count) -> temperature)
-				minMonth[countMonth] = (dataTemperature + count) -> temperature;
+			if(minMonth[countMonth] > sensor -> dataTemperature[count].temperature)
+				minMonth[countMonth] = sensor -> dataTemperature[count].temperature;
 			count++;
 		}
 	}
@@ -205,18 +149,18 @@ void minTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat
 		stat[i][2] = minMonth[i];
 }
 //функция для нахождения максимальной температуры за месяц
-void maxTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat)[4])
+void maxTemperatureMonth(data *sensor, float (*stat)[4])
 {
 	int maxMonth[12] = {0}, count = 0;
 	
 	for(int countMonth = 0; countMonth < 12; countMonth++)
 	{
-		maxMonth[countMonth] = (dataTemperature + count) -> temperature;
+		maxMonth[countMonth] = sensor -> dataTemperature[count].temperature;
 		count++;
-		while((dataTemperature + count) -> month == countMonth + 1)
+		while(sensor -> dataTemperature[count].month == countMonth + 1)
 		{
-			if(maxMonth[countMonth] < (dataTemperature + count) -> temperature)
-				maxMonth[countMonth] = (dataTemperature + count) -> temperature;
+			if(maxMonth[countMonth] < sensor -> dataTemperature[count].temperature)
+				maxMonth[countMonth] = sensor -> dataTemperature[count].temperature;
 			count++;
 		}
 	}
@@ -225,49 +169,49 @@ void maxTemperatureMonth(struct sensorTemperature* dataTemperature, float (*stat
 		stat[i][3] = maxMonth[i];
 }
 //функция для расчета среднегодовой температуры
-float middleTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
+float middleTemperatureYear(data *sensor)
 {
 	float sumTemperatureYear = 0;
 		
-	for(int i = 0; i < countMeasurements; i++)
-		sumTemperatureYear += (dataTemperature + i) -> temperature;
+	for(int i = 0; i < sensor -> countSensorMeasurements; i++)
+		sumTemperatureYear += sensor -> dataTemperature[i].temperature;
 		
-	return sumTemperatureYear / countMeasurements;
+	return sumTemperatureYear / sensor -> countSensorMeasurements;
 }
 //функция для нахождения минимальной температуры за год
-int minTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
+int minTemperatureYear(data *sensor)
 {
-	int minTempYear = dataTemperature -> temperature;
+	int minTempYear = sensor -> dataTemperature[0].temperature;
 	
-	for(int i = 1; i < countMeasurements; i++)
-		if(minTempYear > (dataTemperature + i) -> temperature)
-			minTempYear = (dataTemperature + i) -> temperature;
+	for(int i = 1; i < sensor -> countSensorMeasurements; i++)
+		if(minTempYear > sensor -> dataTemperature[i].temperature)
+			minTempYear = sensor -> dataTemperature[i].temperature;
 			
 	return minTempYear;
 }
 //функция для нахождения максимальной температуры за год
-int maxTemperatureYear(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)
+int maxTemperatureYear(data *sensor)
 {
-	int maxTempYear = dataTemperature -> temperature;
+	int maxTempYear = sensor -> dataTemperature[0].temperature;
 	
-	for(int i = 1; i < countMeasurements; i++)
-		if(maxTempYear < (dataTemperature + i) -> temperature)
-			maxTempYear = (dataTemperature + i) -> temperature;
+	for(int i = 1; i < sensor -> countSensorMeasurements; i++)
+		if(maxTempYear < sensor -> dataTemperature[i].temperature)
+			maxTempYear = sensor -> dataTemperature[i].temperature;
 			
 	return maxTempYear;
 }
 //функция для печати счиатанных данных
-void printDataTemperature(struct sensorTemperature* dataTemperature, uint32_t countMeasurements)	
+void printDataTemperature(data *sensor)	
 {
-	printf("%d\n", countMeasurements);
-	for(int i = 0; i < countMeasurements; i++)
+	printf("%d\n", sensor -> countSensorMeasurements);
+	for(int i = 0; i < sensor -> countSensorMeasurements; i++)
 	{	
-		printf("%04d %02d %02d %02d %02d %3d\n",	(dataTemperature + i) -> year,
-													(dataTemperature + i) -> month,
-													(dataTemperature + i) -> day,
-													(dataTemperature + i) -> hour,
-													(dataTemperature + i) -> minute,
-													(dataTemperature + i) -> temperature);
+		printf("%04d %02d %02d %02d %02d %3d\n",	sensor -> dataTemperature[i].year,
+													sensor -> dataTemperature[i].month,
+													sensor -> dataTemperature[i].day,
+													sensor -> dataTemperature[i].hour,
+													sensor -> dataTemperature[i].minute,
+													sensor -> dataTemperature[i].temperature);
 	}
 }
 //Функция печати имени таблицы
@@ -297,56 +241,10 @@ void printHeadTable()
 //Функция печати статистики за месяц
 void printStatMonth(uint8_t number, float (*monthStat)[4])
 {
-	switch(number)
-	{
-		case 0:
-			printf("||%8c%s%7c|", ' ', "JAN", ' ');
-		break;
-		
-		case 1:
-			printf("||%8c%s%7c|", ' ', "FEB", ' ');
-		break;
-		
-		case 2:
-			printf("||%8c%s%7c|", ' ', "MAR", ' ');
-		break;
-		
-		case 3:
-			printf("||%8c%s%7c|", ' ', "APR", ' ');
-		break;
-		
-		case 4:
-			printf("||%8c%s%7c|", ' ', "MAY", ' ');
-		break;
-		
-		case 5:
-			printf("||%8c%s%7c|", ' ', "JUN", ' ');
-		break;
-		
-		case 6:
-			printf("||%8c%s%7c|", ' ', "JUL", ' ');
-		break;
-		
-		case 7:
-			printf("||%8c%s%7c|", ' ', "AUG", ' ');
-		break;
-		
-		case 8:
-			printf("||%8c%s%7c|", ' ', "SEP", ' ');
-		break;
-		
-		case 9:
-			printf("||%8c%s%7c|", ' ', "OCT", ' ');
-		break;
-		
-		case 10:
-			printf("||%8c%s%7c|", ' ', "NOV", ' ');
-		break;
-		
-		case 11:
-			printf("||%8c%s%7c|", ' ', "DEC", ' ');
-		break;
-	}
+	char months[12][4] = {{"JAN"}, {"FEB"}, {"MAR"}, {"APR"}, {"MAY"}, {"JUN"}, {"JUL"}, {"AUG"}, {"SEP"}, {"OCT"}, {"NOV"}, {"DEC"}}; 
+	
+	printf("||%8c%s%7c|", ' ', months[number], ' ');
+
 	
 	if(monthStat[number][0] == 0)
 	{
@@ -414,7 +312,7 @@ void printError(uint32_t countMeasurements)
 	fclose(err);
 }
 //функция для печати статистики
-void printStat(float (*monthStat)[4], float *yearStat, uint32_t countMeasurements, uint8_t monthNumber)	
+void printStat(data *sensor, float (*monthStat)[4], float *yearStat, uint8_t monthNumber)	
 {
 	printNameTable();
 	printHeadTable();
@@ -430,5 +328,5 @@ void printStat(float (*monthStat)[4], float *yearStat, uint32_t countMeasurement
 		
 	printStatYear(yearStat);
 	
-	printError(countMeasurements);
-}	
+	printError(sensor -> countSensorMeasurements);
+}

@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #define MAX_COUNT_YEAR_T 525600		//максимальное количество измерений датичка температуры за год
 #define MAX_COUNT_MONTH_T 44640		//максимальное количество измерений датичка температуры за месяц
@@ -21,24 +20,30 @@ struct sensorTemperature		//структура для занчений с дат
 	int temperature;			//температура
 };
 
-void addDataTemperature(struct sensorTemperature**, uint32_t*, char*);					//считывание и парсинг данных
+typedef struct
+{
+	struct sensorTemperature *dataTemperature;
+	uint32_t countSensorMeasurements;
+} data;
 
-void sortByDate(struct sensorTemperature*, uint32_t, char*);							//сортровка по дате
+void addDataTemperature(data*, char*);					//считывание и парсинг данных
 
-void middleTemperatureMonth(struct sensorTemperature*, uint32_t, float (*)[]);			//среднемесячная температура
+void sortByDate(data*, char*);							//сортровка по дате
 
-void minTemperatureMonth(struct sensorTemperature*, float (*)[]);						//минимальная температура за месяц
+void middleTemperatureMonth(data*, float (*)[]);		//среднемесячная температура
 
-void maxTemperatureMonth(struct sensorTemperature*, float (*)[]);						//максимальная температура за месяц
+void minTemperatureMonth(data*, float (*)[]);			//минимальная температура за месяц
 
-float middleTemperatureYear(struct sensorTemperature*, uint32_t);						//среднегодовая температура
+void maxTemperatureMonth(data*, float (*)[]);			//максимальная температура за месяц
 
-int minTemperatureYear(struct sensorTemperature*, uint32_t);							//минамальная температура за год
+float middleTemperatureYear(data*);						//среднегодовая температура
 
-int maxTemperatureYear(struct sensorTemperature*, uint32_t);							//максимальная температура за год
+int minTemperatureYear(data*);							//минамальная температура за год
 
-void printDataTemperature(struct sensorTemperature*, uint32_t);							//печать счиатанных данных
+int maxTemperatureYear(data*);							//максимальная температура за год
 
-void printStat(float (*)[], float*, uint32_t, uint8_t);									//печать статистики
+void printDataTemperature(data*);						//печать счиатанных данных
+
+void printStat(data*, float (*)[], float*, uint8_t);	//печать статистики
 
 #endif

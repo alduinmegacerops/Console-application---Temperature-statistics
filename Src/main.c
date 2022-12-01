@@ -1,11 +1,12 @@
+#include "../Inc/main.h"
 #include "../Inc/temp_functions.h"
 
 int main(int argc, char **argv)
 {
-	struct sensorTemperature *dataTemperature;
+	data sensor;
 	
-	uint32_t countSensorMeasurements = 0;
 	int key = 0;
+	
 	uint8_t numberMonth = 0;
 	
 	float statMonth[12][4] = {0};
@@ -13,11 +14,7 @@ int main(int argc, char **argv)
 	
 	char nameDirr[100];
 	char numberM[10];
-	
-	//Выделение памяти под массив структур
-	//dataTemperature = malloc(sizeof(struct sensorTemperature));
-	
-	dataTemperature = NULL;
+
 	
 	if(argc == 1)
 	{
@@ -52,23 +49,23 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	addDataTemperature(&dataTemperature, &countSensorMeasurements, nameDirr);
+	addDataTemperature(&sensor, nameDirr);
 
-	sortByDate(dataTemperature, countSensorMeasurements, nameDirr);
+	sortByDate(&sensor, nameDirr);
 
-	middleTemperatureMonth(dataTemperature, countSensorMeasurements, statMonth);
-	minTemperatureMonth(dataTemperature, statMonth);
-	maxTemperatureMonth(dataTemperature, statMonth);
+	middleTemperatureMonth(&sensor, statMonth);
+	minTemperatureMonth(&sensor, statMonth);
+	maxTemperatureMonth(&sensor, statMonth);
 	
-	statYear[0] = middleTemperatureYear(dataTemperature, countSensorMeasurements);
-	statYear[1] = minTemperatureYear(dataTemperature, countSensorMeasurements);
-	statYear[2] = maxTemperatureYear(dataTemperature, countSensorMeasurements);
+	statYear[0] = middleTemperatureYear(&sensor);
+	statYear[1] = minTemperatureYear(&sensor);
+	statYear[2] = maxTemperatureYear(&sensor);
 		
-	//printDataTemperature(dataTemperature, countSensorMeasurements);
+	//printDataTemperature(&sensor);
 	
-	printStat(statMonth, statYear, countSensorMeasurements, numberMonth);
+	printStat(&sensor, statMonth, statYear, numberMonth);
 	
-	free(dataTemperature);
+	//free(dataTemperature);
 	
 	return 0;
 }

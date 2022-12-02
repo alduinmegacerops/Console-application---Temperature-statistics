@@ -3,16 +3,22 @@
 //функция для считывания и парсинга данных	
 void addDataTemperature(data *sensor, char *nameFile)
 {	
-	//Инициализируем структуру
+	//инициализируем структуру
 	sensor -> dataTemperature = NULL;
 	sensor -> errorCount = 0;
 	sensor -> lineFileDataError = NULL;
 	
 	char buffer[21];
+	//проверяем была ли задана дирректория с файлом на обработку
+	if(strlen(nameFile) == 1)
+		printf("The <filename.csv> file directory is not set.");
 	
 	FILE *in;
-	
+	//открываем файл на чтение
 	in = fopen(nameFile, "r");
+	//проверяем задан ли существующий файл на обработку
+	if(in == NULL)
+		printf("A non-existing file or directory with the file is specified <filename.csv>.");
 	
 	for(sensor -> countSensorMeasurements = 0; fscanf(in, "%21[^\n]", buffer) != -1; sensor -> countSensorMeasurements++)
 	{
@@ -33,15 +39,15 @@ void addDataTemperature(data *sensor, char *nameFile)
 			else
 			{
 				flag = 1;
-				//Обработка ошибок. Плюс новая ошибка	
+				//обработка ошибок. Плюс новая ошибка	
 				sensor -> errorCount++;
-				//Переопределяем память под новую ошибку
+				//переопределяем память под новую ошибку
 				sensor -> lineFileDataError = realloc(sensor -> lineFileDataError, sizeof(uint32_t) * (sensor -> errorCount + 1));
-				//Запоминаем номер линии где встретились битые данные
+				//запоминаем номер линии где встретились битые данные
 				sensor -> lineFileDataError[sensor -> errorCount - 1] = sensor -> countSensorMeasurements + sensor -> errorCount;
-				//Уменьшаем счетчик валидных данных
+				//уменьшаем счетчик валидных данных
 				sensor -> countSensorMeasurements--;
-				//Освобождаем буффер и заканчиваем проверку буффера
+				//освобождаем буффер и заканчиваем проверку буффера
 				memset(buffer, 0, sizeof(buffer));
 				break;
 			}
@@ -49,16 +55,16 @@ void addDataTemperature(data *sensor, char *nameFile)
 		//парсим данные из буфера по полям структуры		
 		if(flag == 0)
 		{
-			//Переопределяем память под новые данные
+			//переопределяем память под новые данные
 			sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
-			//Записываем новые данные
+			//записываем новые данные
 			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&sensor -> dataTemperature[sensor -> countSensorMeasurements].year, 
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].month,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].day,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].hour,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].minute,
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].temperature);
-			//Освобождаем буффер
+			//освобождаем буффер
 			memset(buffer, 0, sizeof(buffer));
 		}
 	}
@@ -155,18 +161,4 @@ int maxTemperatureYear(data *sensor)
 			maxTempYear = sensor -> dataTemperature[i].temperature;
 			
 	return maxTempYear;
-}
-//функция для печати счиатанных данных
-void printDataTemperature(data *sensor)	
-{
-	printf("%d\n", sensor -> countSensorMeasurements);
-	for(int i = 0; i < sensor -> countSensorMeasurements; i++)
-	{	
-		printf("%04d %02d %02d %02d %02d %3d\n",	sensor -> dataTemperature[i].year,
-													sensor -> dataTemperature[i].month,
-													sensor -> dataTemperature[i].day,
-													sensor -> dataTemperature[i].hour,
-													sensor -> dataTemperature[i].minute,
-													sensor -> dataTemperature[i].temperature);
-	}
 }

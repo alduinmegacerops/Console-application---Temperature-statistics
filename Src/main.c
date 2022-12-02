@@ -9,30 +9,47 @@ int main(int argc, char **argv)
 	
 	char inNameFile[100];
 	char inNumberMonth[3];
+	char inDataLine[21];
 	
 	int key = 0;
 	
 	uint8_t numberMonth = 0;
 	
+	memset(inDataLine, 0, sizeof(inDataLine));
+	
 	if(argc == 1)
 	{
-		printf("Not argument. Try -h for help\n");
+		printf("Not argument. Try -h for help.\n");
 		return 1;
 	}
 	
-	while((key = getopt(argc, argv, "hf:m:")) != -1)
+	while((key = getopt(argc, argv, "ha:f:m:")) != -1)
 	{
 		switch(key)
 		{
-			case 'h':
-				printf("-h - List of keys that handles the given application and their purpose.\n");
-				printf("-f <filename.csv> - directory input csv file to process.\n");
-				printf("-m <number month> - if this key is given, then it is displayed only statistics for the specified month.\n");
-				return 3;
+			case 'a':
+				if(checkDataIn(optarg) == 0)
+				{
+					printf("The data for adding data is not set correctly.");
+					printf("\nCheck if the date and temperature are entered correctly.");
+					printf("\nTry -h for help.");
+					return 4;
+				}
+				else
+					strcpy(inDataLine, optarg);
 			break;
 			
 			case 'f':
 				strcpy(inNameFile, optarg);
+			break;
+			
+			case 'h':
+				printf("\n-h - List of keys that handles the given application and their purpose.\n\n");
+				printf("-a - <year>;<month>;<day>;<hour>;<minute>;<temperature> - adding new data.\n");
+				printf("%5cExample of input data: 2021;1;2;3;4:-10 or 2021;01;02;03;04:-10\n\n", ' ');
+				printf("-f - <filename.csv> - directory input csv file to process.\n\n");
+				printf("-m - <number month> - if this key is given, then it is displayed only statistics for the specified month.\n");
+				return 3;
 			break;
 			
 			case 'm':
@@ -41,15 +58,17 @@ int main(int argc, char **argv)
 			break;
 			
 			case '?':
-				printf("Unknown argument: %s Try -h for help\n", argv[optind-1]);
+				printf("Unknown argument: %s. Try -h for help.\n", argv[optind-1]);
 				return 2;
 			break;
 		}
 	}
 	
 	addDataTemperature(&sensor, inNameFile);
-
+	
 	sortByDate(&sensor, inNameFile);
+	
+	addData(&sensor, inDataLine, inNameFile);
 
 	middleTemperatureMonth(&sensor, statMonth);
 	minTemperatureMonth(&sensor, statMonth);

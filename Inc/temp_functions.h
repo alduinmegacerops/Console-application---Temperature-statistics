@@ -23,11 +23,12 @@ typedef struct
 	uint32_t countSensorMeasurements;					//количество валидных измерений
 	uint32_t errorCount;								//количество не валидных измерений
 	uint32_t *lineFileDataError;						//массив где хранятся номера линий файла где битые данные
+	//char *dataError[21];								//хранилище битых данных
 } data;
 
 void addDataTemperature(data*, char*);					//считывание и парсинг данных
 
-uint64_t dateToInt(data*, uint32_t);					//функци перевода даты и временив в uint64_t
+uint64_t dateToInt(data*, uint32_t);					//функция перевода даты и временив в uint64_t
 
 void swap(data*, uint32_t, uint32_t);					//функция меняет местами i-й элемент с j-ым элементом
 
@@ -47,16 +48,22 @@ int maxTemperatureYear(data*);							//максимальная температ
 
 void printDataTemperature(data*);						//печать счиатанных данных
 
-void printNameTable();									//Функция печати имени таблицы
+void printNameTable();									//функция печати имени таблицы
 
-void printHeadTable();									//Функция печати шапки таблицы
+void printHeadTable();									//функция печати шапки таблицы
 
-void printStatMonth(uint8_t, float (*)[]);				//Функция печати статистики за месяц
+void printStatMonth(uint8_t, float (*)[]);				//функция печати статистики за месяц
 
-void printStatYear(float*);								//Функция печати статистики за год
+void printStatYear(float*);								//функция печати статистики за год
 
-void printError(data*);									//Функция печати ошибок в данных
+void printError(data*);									//функция печати ошибок в данных
 
 void printStat(data*, float (*)[], float*, uint8_t);	//печать статистики
+
+uint8_t checkDataIn(char*);								//функция проверки данных введенных по сле ключа -a и -d
+
+void addData(data*, char*, char*);						//функция добавления данных введеных с ключа -a
+
+//void delData(data*, char*, char*);						//функция удаления данных введеных с ключа -d
 
 #endif

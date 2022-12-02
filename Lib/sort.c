@@ -17,12 +17,32 @@ void swap(data *sensor, uint32_t i, uint32_t j)
 	sensor -> dataTemperature[i] = sensor -> dataTemperature[j];
 	sensor -> dataTemperature[j] = temp;
 }
-//функция сортировки пузырьком
+//функция сортировки пузырьком(модернизированная под один проход для отсортированных данных)
 void sortByDate(data *sensor, char *nameFile)
 {
-	if(strcmp(nameFile, "Data/temperature_big.csv") && strcmp(nameFile, "Data/temperature_big_t.csv"))
-		for(int i = 0; i < sensor -> countSensorMeasurements; ++i)
-			for (int j = i; j < sensor -> countSensorMeasurements; ++j)
-				if(dateToInt(sensor, i) >= dateToInt(sensor, j))
-					swap(sensor, i, j);
+	uint32_t right = sensor -> countSensorMeasurements - 1;
+	uint32_t left = 0;
+	uint8_t flag = 1;
+	while(left < right && flag > 0)
+	{
+		flag = 0;
+		for(int i = left; i < right; i++)
+		{
+			if(dateToInt(sensor, i) > dateToInt(sensor, i + 1))
+			{
+				swap(sensor, i, i + 1);
+				flag = 1;
+			}
+		}
+		right--;
+		for(int i = right; i > left; i--)
+		{
+			if(dateToInt(sensor, i) < dateToInt(sensor, i - 1))
+			{
+				swap(sensor, i, i - 1);
+				flag = 1;
+			}
+		}
+		left++;
+	}
 }

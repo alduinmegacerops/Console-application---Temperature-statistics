@@ -7,6 +7,7 @@ void addDataTemperature(data *sensor, char *nameFile)
 	sensor -> dataTemperature = NULL;
 	sensor -> errorCount = 0;
 	sensor -> lineFileDataError = NULL;
+	sensor -> dataError = NULL;
 	
 	char buffer[21];
 	//проверяем была ли задана дирректория с файлом на обработку
@@ -41,10 +42,15 @@ void addDataTemperature(data *sensor, char *nameFile)
 				flag = 1;
 				//обработка ошибок. Плюс новая ошибка	
 				sensor -> errorCount++;
-				//переопределяем память под новую ошибку
-				sensor -> lineFileDataError = realloc(sensor -> lineFileDataError, sizeof(uint32_t) * (sensor -> errorCount + 1));
+				//переопределяем память под хранение № линии новых биытых данных
+				sensor -> lineFileDataError = (uint32_t*)realloc(sensor -> lineFileDataError, sizeof(uint32_t) * (sensor -> errorCount + 1));
+				//переопределяем память под хранение новых биытых данных
+				sensor -> dataError = (char**)realloc(sensor -> dataError, sizeof(char*) * (sensor -> errorCount + 1));
+				sensor -> dataError[sensor -> errorCount - 1] = (char*)malloc(sizeof(char) * 21);
 				//запоминаем номер линии где встретились битые данные
 				sensor -> lineFileDataError[sensor -> errorCount - 1] = sensor -> countSensorMeasurements + sensor -> errorCount;
+				//записываем битые данные
+				strcpy(sensor -> dataError[sensor -> errorCount - 1], buffer);
 				//уменьшаем счетчик валидных данных
 				sensor -> countSensorMeasurements--;
 				//освобождаем буффер и заканчиваем проверку буффера
@@ -56,7 +62,7 @@ void addDataTemperature(data *sensor, char *nameFile)
 		if(flag == 0)
 		{
 			//переопределяем память под новые данные
-			sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
+			sensor -> dataTemperature = (struct sensorTemperature*)realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
 			//записываем новые данные
 			sscanf(buffer, "%d;%d;%d;%d;%d;%d",	&sensor -> dataTemperature[sensor -> countSensorMeasurements].year, 
 												&sensor -> dataTemperature[sensor -> countSensorMeasurements].month,

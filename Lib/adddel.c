@@ -69,35 +69,49 @@ uint8_t checkDataIn(char *strChek)
 //функция добавления данных введеных с ключа -a
 void addData(data *sensor, char *dataLine, char *nameFile)
 {
+	struct sensorTemperature temp;
+
+	int count = 0;
+	
 	if(strlen(dataLine) > 1)
 	{
-		//увеличиваем счетчик валидных данных
-		sensor -> countSensorMeasurements++;
-		//переопределяем память под новые данные
-		sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
-		//добавляем новые данные
-		sscanf(dataLine, "%d;%d;%d;%d;%d;%d",	&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].year, 
-												&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].month,
-												&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].day,
-												&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].hour,
-												&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].minute,
-												&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].temperature);
-		//текущее положение новых данных
-		int count = sensor -> countSensorMeasurements - 1;
+		//заполняем временную структуру
+		sscanf(dataLine, "%d;%d;%d;%d;%d;%d", 	&temp.year,
+												&temp.month,
+												&temp.day,
+												&temp.hour,
+												&temp.minute,
+												&temp.temperature);
+		
 		//проверяем есть ли данные на дату новых данных
 		for(int i = 0; i < sensor -> countSensorMeasurements - 1; i++)
 		{
-			if(dateToInt(sensor, count) == dateToInt(sensor, i))
+			if(dateToInt(&temp, 0) == dateToInt(sensor -> dataTemperature, i))
 			{
+				printf("The data for the specified date already exists.\n");
+				printf("To replace, delete the old data by the specified date.\n");
 				count = -1;
 				break;
 			}
 		}
-		//printf("%d", sensor -> countSensorMeasurements);
+		//если данных на заданную дату нет
 		if(count != -1)
 		{
+			//увеличиваем счетчик валидных данных
+			sensor -> countSensorMeasurements++;
+			//переопределяем память под новые данные
+			sensor -> dataTemperature = (struct sensorTemperature*)realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
+			//добавляем новые данные
+			sscanf(dataLine, "%d;%d;%d;%d;%d;%d",	&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].year, 
+													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].month,
+													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].day,
+													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].hour,
+													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].minute,
+													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].temperature);
+			//текущее положение новых данных
+			count = sensor -> countSensorMeasurements - 1;
 			//перносим данные согласно сортирвке по дате и времени
-			while(dateToInt(sensor, count) < dateToInt(sensor, count - 1) && count > 1)
+			while(dateToInt(sensor -> dataTemperature, count) < dateToInt(sensor -> dataTemperature, count - 1) && count > 1)
 			{
 				swap(sensor, count, count - 1);
 				count--;
@@ -110,59 +124,65 @@ void addData(data *sensor, char *dataLine, char *nameFile)
 			fprintf(newData, "%s\n", dataLine);
 			
 			fclose(newData);
-		}
-		else
-		{
-			sensor -> countSensorMeasurements--;
-			sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
-			printf("The data for the specified date already exists.\n");
-			printf("To replace, delete the old data by the specified date.\n");
 		}
 	}
 }
 //функция удаления данных введеных с ключа -d
-/*void delData(data *sensor, char *dataLine, char *nameFile)
+void delData(data *sensor, char *dataLine, char *nameFile)
 {
+	struct sensorTemperature temp;
+
+	int count = 0;
+	
 	if(strlen(dataLine) > 1)
 	{
-		//увеличиваем счетчик валидных данных
-		sensor -> countSensorMeasurements++;
-		//переопределяем память под новые данные
-		sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
-		//текущее положение новых данных
-		int count = sensor -> countSensorMeasurements - 1;
-		//проверяем есть ли данные на дату новых данных
+		//заполняем временную структуру
+		sscanf(dataLine, "%d;%d;%d;%d;%d;%d", 	&temp.year,
+												&temp.month,
+												&temp.day,
+												&temp.hour,
+												&temp.minute,
+												&temp.temperature);
+		
+		//проверяем существуют ли удаляемые данные
 		for(int i = 0; i < sensor -> countSensorMeasurements - 1; i++)
 		{
-			if(dateToInt(sensor, count) == dateToInt(sensor, i))
+			if(dateToInt(&temp, 0) == dateToInt(sensor -> dataTemperature, i))
 			{
+				//меняем местами удаляемую строку и последнюю строку
+				if(i != sensor -> countSensorMeasurements - 1)
+					swap(sensor, i, sensor -> countSensorMeasurements - 1);
+				//увеличиваем счетчик валидных данных
+				sensor -> countSensorMeasurements--;
+				//переопределяем память под новое количество данных
+				sensor -> dataTemperature = (struct sensorTemperature*)realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
+				//Убираем строку из исходного файла
+				FILE *oldData;
+				//открываем файл
+				oldData = fopen(nameFile, "w");
+				//перезаписываем исходные файлы
+				for(int i = 0; i < sensor -> countSensorMeasurements; i++)
+				{
+					fprintf(oldData, "%d;%d;%d;%d;%d;%d\n",	sensor -> dataTemperature[i].year, 
+															sensor -> dataTemperature[i].month,
+															sensor -> dataTemperature[i].day,
+															sensor -> dataTemperature[i].hour,
+															sensor -> dataTemperature[i].minute,
+															sensor -> dataTemperature[i].temperature);
+				}
+				for(int i = 0; i < sensor -> errorCount; i++)
+				{
+					fprintf(oldData, "%s\n", sensor -> dataError[i]);
+				}
+				fclose(oldData);
 				count = -1;
 				break;
 			}
 		}
+		//если данных на заданную дату нет
 		if(count != -1)
 		{
-			//перносим данные согласно сортирвке по дате и времени
-			while(dateToInt(sensor, count) < dateToInt(sensor, count - 1))
-			{
-				swap(sensor, count, count - 1);
-				count--;
-			}
-			//Добавляем строку в исходный файл
-			FILE *newData;
-			//открываем файл
-			newData = fopen(nameFile, "a");
-			//записываем строку в конец файла
-			fprintf(newData, "%s\n", dataLine);
-			
-			fclose(newData);
-		}
-		else
-		{
-			sensor -> countSensorMeasurements--;
-			sensor -> dataTemperature = realloc(sensor -> dataTemperature, sizeof(struct sensorTemperature) * (sensor -> countSensorMeasurements + 1));
-			printf("The data for the specified date already exists.\n");
-			printf("To replace, delete the old data by the specified date.\n");
+			printf("There is no data for the specified date.\n");
 		}
 	}
-}*/
+}

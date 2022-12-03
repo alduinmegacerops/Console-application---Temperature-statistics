@@ -62,11 +62,13 @@ int main(int argc, char **argv)
 			case 'h':
 				printf("\n-h - List of keys that handles the given application and their purpose.\n\n");
 				printf("-a - <year>;<month>;<day>;<hour>;<minute>;<temperature> - adding new data.\n");
-				printf("%5cExample of input data: 2021;1;2;3;4;-10 or 2021;01;02;03;04;-10\n\n", ' ');
+				printf("%5cExample: 2021:1:2:3:4:-10 or 2021:01:02:03:04:-10\n\n", ' ');
 				printf("-d - <year>;<month>;<day>;<hour>;<minute>;<temperature> - delete data.\n");
-				printf("%5cExample: 2021;1;2;3;4;-10 or 2021;01;02;03;04;-10\n\n", ' ');
+				printf("%5cExample: 2021:1:2:3:4:-10 or 2021:01:02:03:04:-10\n\n", ' ');
 				printf("-f - <filename.csv> - directory input csv file to process.\n\n");
-				printf("-m - <number month> - if this key is given, then it is displayed only statistics for the specified month.\n");
+				printf("-m - <number month> - if this key is given, then it is displayed only statistics for the specified month.\n\n");
+				printf("-p - <year_begin>;<month_begin>;<day_begin>;<hour_begin>;<minute_begin>-<year_end>;<month_end>;<day_end>;<hour_end>;<minute_end> -\n");
+				printf("%5crange date for print. Example: 2021:1:2:3:4-2021:5:6:7:8 or 2021:01:02:03:04-2021:05:06:07:08\n", ' ');
 				return 3;
 			break;
 			

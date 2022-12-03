@@ -84,12 +84,12 @@ void addData(data *sensor, char *dataLine, char *nameFile)
 												&temp.temperature);
 		
 		//проверяем есть ли данные на дату новых данных
-		for(int i = 0; i < sensor -> countSensorMeasurements - 1; i++)
+		for(int i = 0; i < sensor -> countSensorMeasurements; i++)
 		{
 			if(dateToInt(&temp, 0) == dateToInt(sensor -> dataTemperature, i))
 			{
-				printf("The data for the specified date already exists.\n");
-				printf("To replace, delete the old data by the specified date.\n");
+				printf("\nThe data for the specified date already exists.\n");
+				printf("To replace, delete the old data by the specified date.\n\n");
 				count = -1;
 				break;
 			}
@@ -108,14 +108,6 @@ void addData(data *sensor, char *dataLine, char *nameFile)
 													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].hour,
 													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].minute,
 													&sensor -> dataTemperature[sensor -> countSensorMeasurements - 1].temperature);
-			//текущее положение новых данных
-			count = sensor -> countSensorMeasurements - 1;
-			//перносим данные согласно сортирвке по дате и времени
-			while(dateToInt(sensor -> dataTemperature, count) < dateToInt(sensor -> dataTemperature, count - 1) && count > 1)
-			{
-				swap(sensor, count, count - 1);
-				count--;
-			}
 			//Добавляем строку в исходный файл
 			FILE *newData;
 			//открываем файл
@@ -145,7 +137,7 @@ void delData(data *sensor, char *dataLine, char *nameFile)
 												&temp.temperature);
 		
 		//проверяем существуют ли удаляемые данные
-		for(int i = 0; i < sensor -> countSensorMeasurements - 1; i++)
+		for(int i = 0; i < sensor -> countSensorMeasurements; i++)
 		{
 			if(dateToInt(&temp, 0) == dateToInt(sensor -> dataTemperature, i))
 			{
@@ -182,7 +174,7 @@ void delData(data *sensor, char *dataLine, char *nameFile)
 		//если данных на заданную дату нет
 		if(count != -1)
 		{
-			printf("There is no data for the specified date.\n");
+			printf("\nThere is no data for the specified date.\n\n");
 		}
 	}
 }

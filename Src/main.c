@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 	char inNumberMonth[3];
 	char inAddDataLine[21];
 	char inDelDataLine[21];
+	char inDateRange[42];
 	
 	int key = 0;
 	
@@ -18,23 +19,24 @@ int main(int argc, char **argv)
 	
 	memset(inAddDataLine, 0, sizeof(inAddDataLine));
 	memset(inDelDataLine, 0, sizeof(inDelDataLine));
+	memset(inDateRange, 0, sizeof(inDateRange));
 	
 	if(argc == 1)
 	{
-		printf("Not argument. Try -h for help.\n");
+		printf("\nNot argument. Try -h for help.\n");
 		return 1;
 	}
 	
-	while((key = getopt(argc, argv, "ha:d:f:m:")) != -1)
+	while((key = getopt(argc, argv, "ha:d:f:m:p:")) != -1)
 	{
 		switch(key)
 		{
 			case 'a':
 				if(checkDataIn(optarg) == 0)
 				{
-					printf("The data for adding data is not set correctly.");
+					printf("\nThe data for adding data is not set correctly.");
 					printf("\nCheck if the date and temperature are entered correctly.");
-					printf("\nTry -h for help.");
+					printf("\nTry -h for help.\n");
 					return 4;
 				}
 				else
@@ -44,9 +46,9 @@ int main(int argc, char **argv)
 			case 'd':
 				if(checkDataIn(optarg) == 0)
 				{
-					printf("The data for adding data is not set correctly.");
+					printf("\nThe data for adding data is not set correctly.");
 					printf("\nCheck if the date and temperature are entered correctly.");
-					printf("\nTry -h for help.");
+					printf("\nTry -h for help.\n");
 					return 5;
 				}
 				else
@@ -73,8 +75,13 @@ int main(int argc, char **argv)
 				numberMonth = atoi(inNumberMonth);
 			break;
 			
+			case 'p':
+				//strcpy(inNumberMonth, optarg);
+				//numberMonth = atoi(inNumberMonth);
+			break;
+			
 			case '?':
-				printf("Unknown argument: %s. Try -h for help.\n", argv[optind-1]);
+				printf("\nUnknown argument: %s. Try -h for help.\n", argv[optind-1]);
 				return 2;
 			break;
 		}
@@ -82,10 +89,10 @@ int main(int argc, char **argv)
 	
 	addDataTemperature(&sensor, inNameFile);
 	
-	sortByDate(&sensor, inNameFile);
-
 	addData(&sensor, inAddDataLine, inNameFile);
 	delData(&sensor, inDelDataLine, inNameFile);
+	
+	sortByDate(&sensor, inNameFile);
 
 	middleTemperatureMonth(&sensor, statMonth);
 	minTemperatureMonth(&sensor, statMonth);
@@ -95,7 +102,7 @@ int main(int argc, char **argv)
 	statYear[1] = minTemperatureYear(&sensor);
 	statYear[2] = maxTemperatureYear(&sensor);
 		
-	//printDataTemperature(&sensor);
+	printDataTemperature(&sensor);
 
 	printStat(&sensor, statMonth, statYear, numberMonth);
 	

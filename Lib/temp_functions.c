@@ -12,14 +12,14 @@ void addDataTemperature(data *sensor, char *nameFile)
 	char buffer[21];
 	//проверяем была ли задана дирректория с файлом на обработку
 	if(strlen(nameFile) == 1)
-		printf("The <filename.csv> file directory is not set.");
+		printf("\nThe <filename.csv> file directory is not set.\n");
 	
 	FILE *in;
 	//открываем файл на чтение
 	in = fopen(nameFile, "r");
 	//проверяем задан ли существующий файл на обработку
 	if(in == NULL)
-		printf("A non-existing file or directory with the file is specified <filename.csv>.");
+		printf("\nA non-existing file or directory with the file is specified <filename.csv>.\n");
 	
 	for(sensor -> countSensorMeasurements = 0; fscanf(in, "%21[^\n]", buffer) != -1; sensor -> countSensorMeasurements++)
 	{

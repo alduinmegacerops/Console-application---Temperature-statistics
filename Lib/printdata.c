@@ -169,5 +169,7 @@ void printDataTemperature(data *sensor, char *rangeDate)
 		
 		for(int i = 0; i < 102; i++)
 			printf("%c", '=');
+	
+		free(buffer);
 	}
 }

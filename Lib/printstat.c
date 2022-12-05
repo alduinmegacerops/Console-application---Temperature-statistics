@@ -1,7 +1,7 @@
 #include "../Inc/temp_functions.h"
 
-//функция печати имени таблицы
-void printNameTable()
+//функция печати имени таблицы статистики
+void printNameTableStat()
 {
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
@@ -11,8 +11,8 @@ void printNameTable()
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
 }
-//функция печати шапки таблицы
-void printHeadTable()
+//функция печати шапки таблицы статистики
+void printHeadTableStat()
 {
 	printf("\n||%7c%s%6c|", ' ', "Month", ' ');
 	printf("|%6c%s%6c|", ' ', "Middle Month", ' ');
@@ -48,10 +48,12 @@ void printStatMonth(uint8_t number, float (*monthStat)[4])
 //функция печати статистики за год
 void printStatYear(float *yearStat)
 {
+	printf("\n||%98c||", ' ');
 	printf("\n|| Temperature statistics for the year:");
 	printf(" Middle Year = %6.2f", yearStat[0]);
 	printf(" Minimum Year = %3.f", yearStat[1]);
 	printf(" Maximum Year = %3.0f  ||\n", yearStat[2]);
+	printf("||%98c||\n", ' ');
 	
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
@@ -81,12 +83,14 @@ void printError(data *sensor)
 
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
+	
+	printf("\n");
 }
 //функция для печати статистики
 void printStat(data *sensor, float (*monthStat)[4], float *yearStat, uint8_t monthNumber)	
 {
-	printNameTable();
-	printHeadTable();
+	printNameTableStat();
+	printHeadTableStat();
 	
 	if(monthNumber == 0)
 		for(int i = 0; i < 12; i++)
@@ -98,20 +102,4 @@ void printStat(data *sensor, float (*monthStat)[4], float *yearStat, uint8_t mon
 		printf("%c", '=');
 		
 	printStatYear(yearStat);
-	
-	printError(sensor);
-}
-//функция для печати счиатанных данных
-void printDataTemperature(data *sensor)	
-{
-	printf("%d\n", sensor -> countSensorMeasurements);
-	for(int i = 0; i < sensor -> countSensorMeasurements; i++)
-	{	
-		printf("%04d %02d %02d %02d %02d %3d\n",	sensor -> dataTemperature[i].year,
-													sensor -> dataTemperature[i].month,
-													sensor -> dataTemperature[i].day,
-													sensor -> dataTemperature[i].hour,
-													sensor -> dataTemperature[i].minute,
-													sensor -> dataTemperature[i].temperature);
-	}
 }

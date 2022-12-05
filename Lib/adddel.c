@@ -1,19 +1,21 @@
 #include "../Inc/temp_functions.h"
 
 //функция проверки данных введенных после ключа -a и -d
-uint8_t checkDataIn(char *strChek)
+uint8_t checkDataIn(char *strCheck)
 {
+	//флаговая переменная
 	uint8_t tempCount = 0;
-	
+	//буфферная структура
 	struct sensorTemperature checkBuffer;
-	
-	for(int i = 0; i < strlen(strChek); i++)
-		if(strChek[i] == ':' && strChek[strlen(strChek) - 1] != ':')
+	//считаем разделители
+	for(int i = 0; i < strlen(strCheck); i++)
+		if(strCheck[i] == ':' && strCheck[strlen(strCheck) - 1] != ':')
 			tempCount++;
-			
+	//проверка корректность записи разделителей
 	if(tempCount == 5)
 	{
-		sscanf(strChek, "%d:%d:%d:%d:%d:%d", 	&checkBuffer.year,
+		//заполняем буффер
+		sscanf(strCheck, "%d:%d:%d:%d:%d:%d", 	&checkBuffer.year,
 												&checkBuffer.month,
 												&checkBuffer.day,
 												&checkBuffer.hour,
@@ -23,7 +25,7 @@ uint8_t checkDataIn(char *strChek)
 		if(checkBuffer.month > 0 && checkBuffer.month < 13)
 		{
 			//проверка высокосного года	
-			if(checkBuffer.month == 2 && (checkBuffer.year - 2000) % 4 == 0)
+			if(checkBuffer.month == 2 && checkBuffer.year % 4 == 0)
 			{
 				//проверка на корректность введенных дня, часа, минуты и температуры
 				if(checkBuffer.day > 0 && checkBuffer.day < 30 && checkBuffer.hour >= 0 && checkBuffer.hour < 24 && checkBuffer.minute >= 0 && checkBuffer.minute < 60 && checkBuffer.temperature > -100 && checkBuffer.temperature < 100)
@@ -31,7 +33,8 @@ uint8_t checkDataIn(char *strChek)
 				else
 					return 0;
 			}
-			else if(checkBuffer.month == 2 && (checkBuffer.year - 2000) % 4 != 0)
+			//проверка не высокосного года
+			else if(checkBuffer.month == 2 && checkBuffer.year % 4 != 0)
 			{
 				//проверка на корректность введенных дня, часа, минуты и температуры
 				if(checkBuffer.day > 0 && checkBuffer.day < 29 && checkBuffer.hour >= 0 && checkBuffer.hour < 24 && checkBuffer.minute >= 0 && checkBuffer.minute < 60 && checkBuffer.temperature > -100 && checkBuffer.temperature < 100)

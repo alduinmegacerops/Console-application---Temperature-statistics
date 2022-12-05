@@ -1,7 +1,7 @@
-all: stattemp
+all: TempSensStat
 
-stattemp: Src/main.o Lib/temp_functions.o Lib/sort.o Lib/printstat.o Lib/adddel.o Lib/printdata.o
-	gcc -o stattemp Lib/temp_functions.o Lib/sort.o Lib/printstat.o Lib/adddel.o Lib/printdata.o Src/main.o
+TempSensStat: Src/main.o Lib/temp_functions.o Lib/sort.o Lib/printstat.o Lib/adddel.o Lib/printdata.o Lib/printerror.o
+	gcc -o TempSensStat Lib/temp_functions.o Lib/sort.o Lib/printstat.o Lib/adddel.o Lib/printdata.o Lib/printerror.o Src/main.o
 
 Src/main.o: Src/main.c Inc/main.h
 	gcc -c --std=c99 -o Src/main.o  Src/main.c
@@ -21,7 +21,10 @@ Lib/adddel.o: Lib/adddel.c
 Lib/printdata.o: Lib/printdata.c
 	gcc -c --std=c99 -o Lib/printdata.o  Lib/printdata.c
 	
+Lib/printerror.o: Lib/printerror.c
+	gcc -c --std=c99 -o Lib/printerror.o  Lib/printerror.c
+	
 clean:
 	del Lib\*.o
 	del Src\*.o
-	del stattemp.exe
+	del TempSensStat.exe

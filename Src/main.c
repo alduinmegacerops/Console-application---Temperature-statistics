@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 	printStat(&sensor, statMonth, statYear, numberMonth);
 	//печатаем данные за указанный диапазон если задан ключ -p
 	printDataTemperature(&sensor, inDateRange);
-	//
+	//Печатаем статистику по ошибкам
 	printError(&sensor);
 	//освобождаем память
 	free(sensor.dataTemperature);

@@ -42,9 +42,9 @@ void addDataTemperature(data *sensor, char *nameFile)
 				flag = 1;
 				//обработка ошибок. Плюс новая ошибка	
 				sensor -> errorCount++;
-				//переопределяем память под хранение № линии новых биытых данных
+				//переопределяем память под хранение № линии новых битых данных
 				sensor -> lineFileDataError = (uint32_t*)realloc(sensor -> lineFileDataError, sizeof(uint32_t) * (sensor -> errorCount + 1));
-				//переопределяем память под хранение новых биытых данных
+				//переопределяем память под хранение новых битых данных
 				sensor -> dataError = (char**)realloc(sensor -> dataError, sizeof(char*) * (sensor -> errorCount + 1));
 				sensor -> dataError[sensor -> errorCount - 1] = (char*)malloc(sizeof(char) * 21);
 				//запоминаем номер линии где встретились битые данные

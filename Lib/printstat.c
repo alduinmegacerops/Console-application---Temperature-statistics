@@ -5,8 +5,9 @@ void printNameTableStat()
 {
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');
-		
-	printf("\n||%30c%s%30c||\n", ' ', "Temperature statistics from the sensor", ' ');
+	printf("\n||%98c||", ' ');	
+	printf("\n||%30c%s%30c||", ' ', "Temperature statistics from the sensor", ' ');
+	printf("\n||%98c||\n", ' ');	
 	
 	for(int i = 0; i < 102; i++)
 		printf("%c", '=');

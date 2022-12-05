@@ -109,25 +109,9 @@ uint8_t checkDateRangeIn(char *strCheck)
 void printNameTableData(char *beginDate, char *endDate)
 {
 	printf("\n||%19c%s %s-%s%20c||\n", ' ', "Data Temperature in range", beginDate, endDate, ' ');
-	
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
+	printf("||%98c||\n", ' ');
 }
-//функция печати шапки таблицы данных
-void printHeadTableData()
-{
-	printf("\n||%4c%s%5c|", ' ', "Year", ' ');
-	printf("|%4c%s%4c|", ' ', "Month", ' ');
-	printf("|%4c%s%4c|", ' ', "Day", ' ');
-	printf("|%5c%s%5c|", ' ', "Hour", ' ');
-	printf("|%5c%s%5c|", ' ', "Minute", ' ');
-	printf("|%5c%s%5c||\n", ' ', "Temperature", ' ');
-	
-	for(int i = 0; i < 102; i++)
-		printf("%c", '=');
-		
-	printf("\n");
-}
+
 //функция для печати данныз за период указанный в диапазоне
 void printDataTemperature(data *sensor, char *rangeDate)	
 {
@@ -157,8 +141,6 @@ void printDataTemperature(data *sensor, char *rangeDate)
 											&(buffer + 1) -> minute);
 		//печатаем имя таблицы данных
 		printNameTableData(beginDate, endDate);
-		//печатаем шапку таблицы данных
-		printHeadTableData();
 		//печать данных
 		for(int i = 0; i < sensor -> countSensorMeasurements; i++)
 		{	
@@ -166,12 +148,13 @@ void printDataTemperature(data *sensor, char *rangeDate)
 			{
 				flag = 1;
 				
-				printf("||%4c%4d%5c|", ' ', sensor -> dataTemperature[i].year, ' ');
-				printf("|%5c%02d%6c|", ' ', sensor -> dataTemperature[i].month, ' ');
-				printf("|%4c%02d%5c|", ' ', sensor -> dataTemperature[i].day, ' ');
-				printf("|%6c%02d%6c|", ' ', sensor -> dataTemperature[i].hour, ' ');
-				printf("|%7c%02d%7c|", ' ', sensor -> dataTemperature[i].minute, ' ');
-				printf("|%8c%4d%9c||\n", ' ', sensor -> dataTemperature[i].temperature, ' ');
+				printf("|| %4d-", sensor -> dataTemperature[i].year);
+				printf("%02d-",sensor -> dataTemperature[i].month);
+				printf("%02d ",sensor -> dataTemperature[i].day);
+				printf("%02d:",sensor -> dataTemperature[i].hour);
+				printf("%02d", sensor -> dataTemperature[i].minute);
+				printf(" T=%4d", sensor -> dataTemperature[i].temperature);
+				printf("%74c||\n", ' ');
 				
 				i++;
 			}

@@ -13,6 +13,7 @@ int main(int argc, char **argv)
 	char inAddDataLine[21];
 	char inDelDataLine[21];
 	char inDateRange[34];
+	char outNameFile[100];
 	//переменная для обработки ключей
 	int key = 0;
 	//перепенная для номера месяца
@@ -35,27 +36,11 @@ int main(int argc, char **argv)
 		switch(key)
 		{
 			case 'a':
-				if(checkDataIn(optarg) == 0)
-				{
-					printf("\nThe data for adding data is not set correctly.");
-					printf("\nCheck if the date and temperature are entered correctly.");
-					printf("\nTry -h for help.\n");
-					return 4;
-				}
-				else
-					strcpy(inAddDataLine, optarg);
+				strcpy(inAddDataLine, optarg);
 			break;
 			
 			case 'd':
-				if(checkDataIn(optarg) == 0)
-				{
-					printf("\nThe data for delete data is not set correctly.");
-					printf("\nCheck if the date and temperature are entered correctly.");
-					printf("\nTry -h for help.\n");
-					return 5;
-				}
-				else
-					strcpy(inDelDataLine, optarg);
+				strcpy(inDelDataLine, optarg);
 			break;
 			
 			case 'f':
@@ -81,15 +66,7 @@ int main(int argc, char **argv)
 			break;
 			
 			case 'p':
-				if(checkDateRangeIn(optarg) == 0)
-				{
-					printf("\nThe date range is specified incorrectly.");
-					printf("\nCheck if the date are entered correctly.");
-					printf("\nTry -h for help.\n");
-					return 6;
-				}
-				else
-					strcpy(inDateRange, optarg);
+				strcpy(inDateRange, optarg);
 			break;
 			
 			case '?':
@@ -113,10 +90,10 @@ int main(int argc, char **argv)
 	statYear[0] = middleTemperatureYear(&sensor);
 	statYear[1] = minTemperatureYear(&sensor);
 	statYear[2] = maxTemperatureYear(&sensor);
-	//выводим статистику
-	printStat(&sensor, statMonth, statYear, numberMonth);
 	//печатаем данные за указанный диапазон если задан ключ -p
 	printDataTemperature(&sensor, inDateRange);
+	//выводим статистику
+	printStat(&sensor, statMonth, statYear, numberMonth);
 	//Печатаем статистику по ошибкам
 	printError(&sensor);
 	//освобождаем память

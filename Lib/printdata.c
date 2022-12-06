@@ -108,6 +108,9 @@ uint8_t checkDateRangeIn(char *strCheck)
 //функция печати имени таблицы данных
 void printNameTableData(char *beginDate, char *endDate)
 {
+	for(int i = 0; i < 102; i++)
+		printf("%c", '=');
+				
 	printf("\n||%19c%s %s-%s%20c||\n", ' ', "Data Temperature in range", beginDate, endDate, ' ');
 	printf("||%98c||\n", ' ');
 }
@@ -117,59 +120,66 @@ void printDataTemperature(data *sensor, char *rangeDate)
 {
 	if(strlen(rangeDate) > 1)
 	{
-		//флаговая переменная
-		uint8_t flag = 0;
-		//строки для начальной даты и конечной
-		char *beginDate, *endDate;
-		//делим строку на 2 строки начальная дата и конечнаяя дата
-		beginDate = strtok(rangeDate, "-");
-		endDate = strtok(NULL, "-");
-		//объявляем буфферную структуру и выделяем память под буффер
-		struct sensorTemperature *buffer;
-		buffer = malloc(sizeof(struct sensorTemperature) * 2);
-		//вписываем в буффер дату начало
-		sscanf(beginDate, "%d:%d:%d:%d:%d",	&buffer -> year,
-											&buffer -> month,
-											&buffer -> day,
-											&buffer -> hour,
-											&buffer -> minute);
-		//вписывем в буффер дату конец
-		sscanf(endDate, "%d:%d:%d:%d:%d",	&(buffer + 1) -> year,
-											&(buffer + 1) -> month,
-											&(buffer + 1) -> day,
-											&(buffer + 1) -> hour,
-											&(buffer + 1) -> minute);
-		//печатаем имя таблицы данных
-		printNameTableData(beginDate, endDate);
-		//печать данных
-		for(int i = 0; i < sensor -> countSensorMeasurements; i++)
-		{	
-			while(dateToInt(buffer, 0) <= dateToInt(sensor -> dataTemperature, i) && dateToInt(buffer, 1) >= dateToInt(sensor -> dataTemperature, i))
-			{
-				flag = 1;
-				
-				printf("|| %4d-", sensor -> dataTemperature[i].year);
-				printf("%02d-",sensor -> dataTemperature[i].month);
-				printf("%02d ",sensor -> dataTemperature[i].day);
-				printf("%02d:",sensor -> dataTemperature[i].hour);
-				printf("%02d", sensor -> dataTemperature[i].minute);
-				printf(" T=%4d", sensor -> dataTemperature[i].temperature);
-				printf("%74c||\n", ' ');
-				
-				i++;
-			}
-		}
-		//если данныее не найдены
-		if(flag == 0)
+		if(checkDateRangeIn(rangeDate) == 1)
 		{
-			printf("||%98c||\n", ' ');
-			printf("|| There is no data in the specified range.%57c||\n", ' ');
-			printf("||%98c||\n", ' ');
+			//флаговая переменная
+			uint8_t flag = 0;
+			//строки для начальной даты и конечной
+			char *beginDate, *endDate;
+			//делим строку на 2 строки начальная дата и конечнаяя дата
+			beginDate = strtok(rangeDate, "-");
+			endDate = strtok(NULL, "-");
+			//объявляем буфферную структуру и выделяем память под буффер
+			struct sensorTemperature *buffer;
+			buffer = malloc(sizeof(struct sensorTemperature) * 2);
+			//вписываем в буффер дату начало
+			sscanf(beginDate, "%d:%d:%d:%d:%d",	&buffer -> year,
+												&buffer -> month,
+												&buffer -> day,
+												&buffer -> hour,
+												&buffer -> minute);
+			//вписывем в буффер дату конец
+			sscanf(endDate, "%d:%d:%d:%d:%d",	&(buffer + 1) -> year,
+												&(buffer + 1) -> month,
+												&(buffer + 1) -> day,
+												&(buffer + 1) -> hour,
+												&(buffer + 1) -> minute);
+			//печатаем имя таблицы данных
+			printNameTableData(beginDate, endDate);
+			//печать данных
+			for(int i = 0; i < sensor -> countSensorMeasurements; i++)
+			{	
+				while(dateToInt(buffer, 0) <= dateToInt(sensor -> dataTemperature, i) && dateToInt(buffer, 1) >= dateToInt(sensor -> dataTemperature, i))
+				{
+					flag = 1;
+					
+					printf("|| %4d-", sensor -> dataTemperature[i].year);
+					printf("%02d-",sensor -> dataTemperature[i].month);
+					printf("%02d ",sensor -> dataTemperature[i].day);
+					printf("%02d:",sensor -> dataTemperature[i].hour);
+					printf("%02d", sensor -> dataTemperature[i].minute);
+					printf(" T=%4d", sensor -> dataTemperature[i].temperature);
+					printf("%74c||\n", ' ');
+					
+					i++;
+				}
+			}
+			//если данныее не найдены
+			if(flag == 0)
+			{
+				printf("||%98c||\n", ' ');
+				printf("|| There is no data in the specified range.%57c||\n", ' ');
+				printf("||%98c||\n", ' ');
+			}
+		
+			free(buffer);
+		}
+		else
+		{
+			printf("\nThe date range is specified incorrectly.");
+			printf("\nCheck if the date are entered correctly.");
+			printf("\nTry -h for help.\n\n");
 		}
 		
-		for(int i = 0; i < 102; i++)
-			printf("%c", '=');
-	
-		free(buffer);
 	}
 }

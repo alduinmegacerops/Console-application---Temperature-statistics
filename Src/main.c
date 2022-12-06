@@ -13,7 +13,6 @@ int main(int argc, char **argv)
 	char inAddDataLine[21];
 	char inDelDataLine[21];
 	char inDateRange[34];
-	char outNameFile[100];
 	//переменная для обработки ключей
 	int key = 0;
 	//перепенная для номера месяца
@@ -31,12 +30,19 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	//обрабатываем ключи
-	while((key = getopt(argc, argv, "ha:d:f:m:p:")) != -1)
+	while((key = getopt(argc, argv, "hba:d:f:m:p:")) != -1)
 	{
 		switch(key)
 		{
 			case 'a':
 				strcpy(inAddDataLine, optarg);
+			break;
+			
+			case 'b':
+				if(strlen(inNameFile) == 0)
+					printf("\nThe <filename.csv> file directory is not set or key <b> specified before key <f> .\n");
+				else
+					backup(inNameFile);
 			break;
 			
 			case 'd':
@@ -51,6 +57,7 @@ int main(int argc, char **argv)
 				printf("\n-h - List of keys that handles the given application and their purpose.\n\n");
 				printf("-a - <year>:<month>:<day>:<hour>:<minute>:<temperature> - adding new data.\n");
 				printf("%5cExample: 2021:1:2:3:4:-10 or 2021:01:02:03:04:-10\n\n", ' ');
+				printf("-b - Creates a backup copy <filename_backup.csv> of the file <filename.csv> in the same directory.\n\n");
 				printf("-d - <year>:<month>:<day>:<hour>:<minute>:<temperature> - delete data.\n");
 				printf("%5cExample: 2021:1:2:3:4:-10 or 2021:01:02:03:04:-10\n\n", ' ');
 				printf("-f - <filename.csv> - directory input csv file to process.\n\n");
